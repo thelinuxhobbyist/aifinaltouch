@@ -95,8 +95,8 @@
   /* Layout */
   --container: 72rem;
   --container-narrow: 46rem;
-  --container-profile: 60rem;
-  --profile-rail: 17rem;
+  --container-profile: 64rem;
+  --profile-rail: 16rem;
   --gutter: clamp(1.25rem, 4vw, 2rem);
   --header-h: 4rem;
   --sidebar: 20rem;
@@ -1240,19 +1240,48 @@ main {
   border: 1px solid var(--c-line);
   border-radius: var(--radius-sm);
 }
-.profile-layout {
+main:has(> .profile-page) {
+  display: flex;
+  flex-direction: column;
+}
+main:has(> .profile-page) + .site-footer {
+  margin-top: 0;
+}
+body:has(.profile-page) :is(.site-header, .site-footer) .container {
+  max-width: calc(var(--container-profile) + 2 * var(--gutter));
+}
+.profile-page {
+  flex: 1;
+  padding-block: clamp(var(--space-6), 2rem + 3vw, var(--space-16));
+  background: var(--c-surface);
+}
+.profile-card {
   display: grid;
-  gap: var(--space-10);
+  gap: var(--space-8);
+  padding: clamp(var(--space-6), 1rem + 2.5vw, var(--space-12));
+  background: var(--c-bg);
+  border: 1px solid var(--c-line);
+  border-radius: var(--radius-xl);
+  box-shadow: var(--shadow-sm);
+}
+.profile-rail {
+  padding-top: var(--space-6);
+  border-top: 1px solid var(--c-line);
 }
 @media (min-width: 900px) {
-  .profile-layout {
+  .profile-card {
     grid-template-columns: minmax(0, 1fr) var(--profile-rail);
-    gap: var(--space-12);
+    gap: 0;
   }
   .profile-rail {
+    margin-left: var(--space-10);
+    padding: 0 0 0 var(--space-10);
+    border-top: 0;
+    border-left: 1px solid var(--c-line);
+  }
+  .profile-rail__inner {
     position: sticky;
-    top: calc(var(--header-h) + var(--space-6));
-    align-self: start;
+    top: calc(var(--header-h) + var(--space-8));
   }
 }
 .profile-id {

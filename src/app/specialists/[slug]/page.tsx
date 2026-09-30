@@ -62,14 +62,15 @@ export default async function SpecialistPage({ params }: PageProps<"/specialists
   ].filter(Boolean) as { label: string; href: string }[];
 
   return (
-    <article className="container container--profile page">
+    <div className="profile-page">
+    <article className="container container--profile">
       {!isProfilePublic(profile) && (
         <p className="alert alert--warning cluster mb-6">
           <StatusBadge status={profile.status} /> This profile is not publicly visible.
         </p>
       )}
 
-      <div className="profile-layout">
+      <div className="profile-card">
         <div className="min-w-0">
           <header>
             <div className="profile-id">
@@ -143,22 +144,22 @@ export default async function SpecialistPage({ params }: PageProps<"/specialists
           </div>
         </div>
 
-        <aside className="profile-rail stack stack--sm">
-          {isOwner ? (
-            <div className="box stack stack--sm">
-              <p className="strong small">This is your profile</p>
-              {profile.portfolio.length === 0 && (
-                <p className="small muted">
-                  Requesters look at examples first. Your work will appear here once you add a portfolio item.
-                </p>
-              )}
-              <Link href="/profile/edit" className="btn btn--secondary btn--block">
-                Edit profile
-              </Link>
-            </div>
-          ) : (
-            <>
-              <div className="box stack stack--sm">
+        <aside className="profile-rail">
+          <div className="profile-rail__inner stack stack--sm">
+            {isOwner ? (
+              <>
+                <p className="strong small">This is your profile</p>
+                {profile.portfolio.length === 0 && (
+                  <p className="small muted">
+                    Requesters look at examples first. Your work will appear here once you add a portfolio item.
+                  </p>
+                )}
+                <Link href="/profile/edit" className="btn btn--secondary btn--block">
+                  Edit profile
+                </Link>
+              </>
+            ) : (
+              <>
                 <h2 className="h4">Work with {first}</h2>
                 <p className="small soft">
                   Describe what your AI-built site or app still needs. Specialists like {first} respond to Requests that match
@@ -167,12 +168,15 @@ export default async function SpecialistPage({ params }: PageProps<"/specialists
                 <Link href="/requests/new" className="btn btn--primary btn--block">
                   Post a Request
                 </Link>
-              </div>
-              <ReportButton targetType="profile" targetId={profile.id} signedIn={!!user} label="Report this profile" />
-            </>
-          )}
+                <div className="mt-2">
+                  <ReportButton targetType="profile" targetId={profile.id} signedIn={!!user} label="Report this profile" />
+                </div>
+              </>
+            )}
+          </div>
         </aside>
       </div>
     </article>
+    </div>
   );
 }
