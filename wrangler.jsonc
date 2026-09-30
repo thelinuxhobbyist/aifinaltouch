@@ -19,8 +19,7 @@
     {
       "binding": "DB",
       "database_name": "aifinaltouch-dev",
-      // Replace with the id printed by: wrangler d1 create aifinaltouch-dev
-      "database_id": "00000000-0000-0000-0000-000000000000",
+      "database_id": "02592946-1387-4547-bd6c-d660ed12d00e",
       "migrations_dir": "drizzle/migrations"
     }
   ],
@@ -45,8 +44,7 @@
         {
           "binding": "DB",
           "database_name": "aifinaltouch-prod",
-          // Replace with the id printed by: wrangler d1 create aifinaltouch-prod
-          "database_id": "00000000-0000-0000-0000-000000000000",
+          "database_id": "534f43af-6be2-4489-897b-ba1a88767d42",
           "migrations_dir": "drizzle/migrations"
         }
       ],
