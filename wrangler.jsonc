@@ -1,0 +1,61 @@
+{
+  "$schema": "node_modules/wrangler/config-schema.json",
+  // Top level = development. Production lives entirely under env.production
+  // and never shares a database, bucket or secrets with development.
+  "name": "aifinaltouch-dev",
+  "main": ".open-next/worker.js",
+  "compatibility_date": "2026-09-01",
+  "compatibility_flags": ["nodejs_compat", "global_fetch_strictly_public"],
+  "assets": {
+    "directory": ".open-next/assets",
+    "binding": "ASSETS"
+  },
+  "observability": { "enabled": true },
+  "vars": {
+    "APP_ENV": "development",
+    "APP_URL": "http://localhost:3000"
+  },
+  "d1_databases": [
+    {
+      "binding": "DB",
+      "database_name": "aifinaltouch-dev",
+      // Replace with the id printed by: wrangler d1 create aifinaltouch-dev
+      "database_id": "00000000-0000-0000-0000-000000000000",
+      "migrations_dir": "drizzle/migrations"
+    }
+  ],
+  "r2_buckets": [
+    {
+      "binding": "UPLOADS",
+      "bucket_name": "aifinaltouch-uploads-dev"
+    }
+  ],
+  "env": {
+    "production": {
+      "name": "aifinaltouch",
+      "routes": [
+        { "pattern": "aifinaltouch.com", "custom_domain": true },
+        { "pattern": "www.aifinaltouch.com", "custom_domain": true }
+      ],
+      "vars": {
+        "APP_ENV": "production",
+        "APP_URL": "https://aifinaltouch.com"
+      },
+      "d1_databases": [
+        {
+          "binding": "DB",
+          "database_name": "aifinaltouch-prod",
+          // Replace with the id printed by: wrangler d1 create aifinaltouch-prod
+          "database_id": "00000000-0000-0000-0000-000000000000",
+          "migrations_dir": "drizzle/migrations"
+        }
+      ],
+      "r2_buckets": [
+        {
+          "binding": "UPLOADS",
+          "bucket_name": "aifinaltouch-uploads-prod"
+        }
+      ]
+    }
+  }
+}

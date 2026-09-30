@@ -1,26 +1,82 @@
 @import "tailwindcss";
 
-:root {
-  --background: #ffffff;
-  --foreground: #171717;
-}
-
 @theme inline {
-  --color-background: var(--background);
-  --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
+  --font-sans: var(--font-geist-sans), ui-sans-serif, system-ui, sans-serif;
+  --font-mono: var(--font-geist-mono), ui-monospace, monospace;
+
+  --color-ink: #0f172a;
+  --color-ink-soft: #334155;
+  --color-muted: #64748b;
+  --color-line: #e2e8f0;
+  --color-line-soft: #eef2f7;
+  --color-mist: #f4f8fc;
+  --color-sky: #e8f1fb;
+  --color-brand: #1d4ed8;
+  --color-brand-dark: #1e3a8a;
+  --color-brand-soft: #dbeafe;
 }
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
-  }
+:root {
+  color-scheme: light;
 }
 
 body {
-  background: var(--background);
-  color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+  background: #ffffff;
+  color: var(--color-ink);
+}
+
+::selection {
+  background: var(--color-brand-soft);
+}
+
+@utility container-page {
+  @apply mx-auto w-full max-w-6xl px-5 sm:px-8;
+}
+@utility container-narrow {
+  @apply mx-auto w-full max-w-3xl px-5 sm:px-8;
+}
+
+@utility btn {
+  @apply inline-flex items-center justify-center gap-2 rounded-md px-4 py-2.5 text-sm font-semibold transition-colors focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-brand disabled:cursor-not-allowed disabled:opacity-60;
+}
+@utility btn-primary {
+  @apply btn bg-brand text-white hover:bg-brand-dark;
+}
+@utility btn-secondary {
+  @apply btn border border-line bg-white text-ink hover:border-slate-300 hover:bg-mist;
+}
+@utility btn-ghost {
+  @apply btn px-2 text-ink-soft hover:text-ink;
+}
+@utility btn-danger {
+  @apply btn border border-red-200 bg-white text-red-700 hover:bg-red-50;
+}
+
+@utility label {
+  @apply block text-sm font-medium text-ink;
+}
+@utility hint {
+  @apply mt-1 text-sm text-muted;
+}
+@utility input {
+  @apply mt-2 block w-full rounded-md border border-line bg-white px-3 py-2.5 text-[15px] text-ink placeholder:text-slate-400 focus:border-brand focus:ring-2 focus:ring-brand-soft focus:outline-none;
+}
+@utility field-error {
+  @apply mt-1.5 text-sm text-red-700;
+}
+
+@utility link {
+  @apply font-medium text-brand underline-offset-4 hover:underline;
+}
+
+@utility tag {
+  @apply inline-flex items-center rounded-full bg-sky px-2.5 py-0.5 text-xs font-medium text-brand-dark;
+}
+
+@utility eyebrow {
+  @apply text-xs font-semibold tracking-[0.12em] text-brand uppercase;
+}
+
+@utility prose-text {
+  @apply text-[15px] leading-7 whitespace-pre-line text-ink-soft;
 }

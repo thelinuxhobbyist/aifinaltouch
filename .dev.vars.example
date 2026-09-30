@@ -1,0 +1,5 @@
+# Copy to .dev.vars for `pnpm preview` (wrangler dev). Development credentials only.
+CLERK_SECRET_KEY=sk_test_xxx
+RESEND_API_KEY=
+EMAIL_FROM="AI Final Touch <notifications@dev.aifinaltouch.com>"
+ADMIN_EMAILS=you@example.com
