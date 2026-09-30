@@ -3,9 +3,11 @@ import { cache } from "react";
 import { auth, currentUser } from "@clerk/nextjs/server";
 import { eq } from "drizzle-orm";
 import { notFound, redirect } from "next/navigation";
+import { connection } from "next/server";
 import { users, type User } from "@/db/schema";
 import { track } from "@/lib/analytics";
 import { config, getDb } from "@/lib/cf";
+import { clerkEnabled } from "@/lib/clerk-config";
 import { newId } from "@/lib/ids";
 
 function adminEmails(): Set<string> {
@@ -50,6 +52,10 @@ async function syncUserFromClerk(clerkId: string): Promise<User | null> {
  * Cached per request so layouts and pages share one lookup.
  */
 export const getCurrentUser = cache(async (): Promise<User | null> => {
+  if (!clerkEnabled) {
+    await connection();
+    return null;
+  }
   const { userId: clerkId } = await auth();
   if (!clerkId) return null;
 

@@ -3,6 +3,7 @@ import { Geist, Geist_Mono } from "next/font/google";
 import { ClerkProvider } from "@clerk/nextjs";
 import { SiteHeader } from "@/components/site-header";
 import { SiteFooter } from "@/components/site-footer";
+import { clerkEnabled } from "@/lib/clerk-config";
 import "./globals.css";
 
 const geistSans = Geist({
@@ -27,19 +28,23 @@ export const metadata: Metadata = {
 };
 
 export default function RootLayout({ children }: LayoutProps<"/">) {
+  const page = (
+    <html lang="en" className={`${geistSans.variable} ${geistMono.variable} h-full antialiased`}>
+      <body className="flex min-h-full flex-col">
+        <SiteHeader />
+        <main className="flex-1">{children}</main>
+        <SiteFooter />
+      </body>
+    </html>
+  );
+  if (!clerkEnabled) return page;
   return (
     <ClerkProvider
       signInUrl="/sign-in"
       signUpUrl="/sign-up"
       appearance={{ variables: { colorPrimary: "#1d4ed8", borderRadius: "0.375rem" } }}
     >
-      <html lang="en" className={`${geistSans.variable} ${geistMono.variable} h-full antialiased`}>
-        <body className="flex min-h-full flex-col">
-          <SiteHeader />
-          <main className="flex-1">{children}</main>
-          <SiteFooter />
-        </body>
-      </html>
+      {page}
     </ClerkProvider>
   );
 }
