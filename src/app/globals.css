@@ -95,6 +95,8 @@
   /* Layout */
   --container: 72rem;
   --container-narrow: 46rem;
+  --container-profile: 60rem;
+  --profile-rail: 17rem;
   --gutter: clamp(1.25rem, 4vw, 2rem);
   --header-h: 4rem;
   --sidebar: 20rem;
@@ -195,6 +197,9 @@ main {
 }
 .container--narrow {
   max-width: calc(var(--container-narrow) + 2 * var(--gutter));
+}
+.container--profile {
+  max-width: calc(var(--container-profile) + 2 * var(--gutter));
 }
 .page {
   padding-block: var(--space-12) var(--space-16);
@@ -1234,6 +1239,21 @@ main {
   background: var(--c-surface);
   border: 1px solid var(--c-line);
   border-radius: var(--radius-sm);
+}
+.profile-layout {
+  display: grid;
+  gap: var(--space-10);
+}
+@media (min-width: 900px) {
+  .profile-layout {
+    grid-template-columns: minmax(0, 1fr) var(--profile-rail);
+    gap: var(--space-12);
+  }
+  .profile-rail {
+    position: sticky;
+    top: calc(var(--header-h) + var(--space-6));
+    align-self: start;
+  }
 }
 .profile-id {
   display: flex;

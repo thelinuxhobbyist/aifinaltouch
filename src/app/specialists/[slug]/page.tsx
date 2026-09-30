@@ -62,14 +62,14 @@ export default async function SpecialistPage({ params }: PageProps<"/specialists
   ].filter(Boolean) as { label: string; href: string }[];
 
   return (
-    <article className="container page">
+    <article className="container container--profile page">
       {!isProfilePublic(profile) && (
         <p className="alert alert--warning cluster mb-6">
           <StatusBadge status={profile.status} /> This profile is not publicly visible.
         </p>
       )}
 
-      <div className="with-sidebar">
+      <div className="profile-layout">
         <div className="min-w-0">
           <header>
             <div className="profile-id">
@@ -143,7 +143,7 @@ export default async function SpecialistPage({ params }: PageProps<"/specialists
           </div>
         </div>
 
-        <aside className="sticky stack stack--sm">
+        <aside className="profile-rail stack stack--sm">
           {isOwner ? (
             <div className="box stack stack--sm">
               <p className="strong small">This is your profile</p>
