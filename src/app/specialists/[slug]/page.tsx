@@ -5,7 +5,7 @@ import { cache } from "react";
 import { ReportButton } from "@/components/report-button";
 import { Avatar, SkillTags, StatusBadge } from "@/components/ui";
 import { getCurrentUser } from "@/lib/auth";
-import { excerpt } from "@/lib/format";
+import { excerpt, firstName } from "@/lib/format";
 import { getProfileWithDetails, isProfilePublic } from "@/lib/queries";
 import { fileUrl } from "@/lib/uploads";
 
@@ -29,6 +29,22 @@ function hostname(url: string): string {
   }
 }
 
+function lines(text: string): string[] {
+  return text
+    .split(/\n+/)
+    .map((l) => l.replace(/^\s*[-•*·]\s*/, "").trim())
+    .filter(Boolean);
+}
+
+function Section({ title, children }: { title: string; children: React.ReactNode }) {
+  return (
+    <section className="detail-section">
+      <h2 className="label-caps detail-section__title">{title}</h2>
+      {children}
+    </section>
+  );
+}
+
 export default async function SpecialistPage({ params }: PageProps<"/specialists/[slug]">) {
   const { slug } = await params;
   const [profile, user] = await Promise.all([loadProfile(slug), getCurrentUser()]);
@@ -37,6 +53,8 @@ export default async function SpecialistPage({ params }: PageProps<"/specialists
   const isOwner = user?.id === profile.userId;
   if (!isProfilePublic(profile) && !isOwner && !user?.isAdmin) notFound();
 
+  const first = firstName(profile.name);
+  const helpsWith = profile.helpsWith ? lines(profile.helpsWith) : [];
   const links = [
     profile.websiteUrl && { label: hostname(profile.websiteUrl), href: profile.websiteUrl },
     profile.linkedinUrl && { label: "LinkedIn", href: profile.linkedinUrl },
@@ -46,109 +64,112 @@ export default async function SpecialistPage({ params }: PageProps<"/specialists
   return (
     <article className="container page">
       {!isProfilePublic(profile) && (
-        <p className="alert alert--warning cluster mb-8">
+        <p className="alert alert--warning cluster mb-6">
           <StatusBadge status={profile.status} /> This profile is not publicly visible.
         </p>
       )}
 
-      <header className="profile-head">
-        <div className="profile-head__intro">
-          <Avatar name={profile.name} size="lg" />
-          <div className="min-w-0">
-            <p className="eyebrow">{profile.title}</p>
-            <h1 className="h1 mt-2">{profile.name}</h1>
-            <p className="lead mt-4">{profile.positioning}</p>
-            <div className="mt-5">
-              <SkillTags skills={profile.skills} />
+      <div className="with-sidebar">
+        <div className="min-w-0">
+          <header>
+            <div className="profile-id">
+              <Avatar name={profile.name} size="lg" />
+              <div className="min-w-0">
+                <h1 className="h1">{profile.name}</h1>
+                <p className="profile-id__title">{profile.title}</p>
+              </div>
             </div>
+            <p className="lead mt-6">{profile.positioning}</p>
+            {profile.skills.length > 0 && (
+              <div className="mt-5">
+                <SkillTags skills={profile.skills} />
+              </div>
+            )}
+            <ul className="profile-facts mt-5" role="list">
+              {profile.location && <li>{profile.location}</li>}
+              <li>Works remotely, worldwide</li>
+              {links.map((l) => (
+                <li key={l.href}>
+                  <a href={l.href} rel="nofollow noopener noreferrer" target="_blank" className="link">
+                    {l.label} ↗
+                  </a>
+                </li>
+              ))}
+            </ul>
+          </header>
+
+          <div className="stack mt-8">
+            {helpsWith.length > 0 && (
+              <Section title={`How ${first} can help`}>
+                {helpsWith.length > 1 ? (
+                  <ul className="bullets">
+                    {helpsWith.map((item) => (
+                      <li key={item}>{item}</li>
+                    ))}
+                  </ul>
+                ) : (
+                  <p className="body soft">{helpsWith[0]}</p>
+                )}
+              </Section>
+            )}
+
+            {profile.about && (
+              <Section title="Background & approach">
+                <p className="prose">{profile.about}</p>
+              </Section>
+            )}
+
+            {profile.portfolio.length > 0 && (
+              <Section title="Selected work">
+                <ul className="grid grid--2 mt-2" role="list">
+                  {profile.portfolio.map((item) => (
+                    <li key={item.id}>
+                      {item.imageUploadId && (
+                        // eslint-disable-next-line @next/next/no-img-element
+                        <img src={fileUrl(item.imageUploadId)} alt={item.title} loading="lazy" className="media" />
+                      )}
+                      <h3 className="h4 mt-3">{item.title}</h3>
+                      {item.description && <p className="small soft mt-1">{item.description}</p>}
+                      {item.url && (
+                        <a href={item.url} rel="nofollow noopener noreferrer" target="_blank" className="link small mt-1 block">
+                          {hostname(item.url)} ↗
+                        </a>
+                      )}
+                    </li>
+                  ))}
+                </ul>
+              </Section>
+            )}
           </div>
         </div>
-        <div className="box stack">
-          <dl className="meta">
-            {profile.location && (
-              <div>
-                <dt>Based in</dt>
-                <dd>{profile.location}</dd>
-              </div>
-            )}
-            <div>
-              <dt>Works</dt>
-              <dd>Remotely, worldwide</dd>
+
+        <aside className="sticky stack stack--sm">
+          {isOwner ? (
+            <div className="box stack stack--sm">
+              <p className="strong small">This is your profile</p>
+              {profile.portfolio.length === 0 && (
+                <p className="small muted">
+                  Requesters look at examples first. Your work will appear here once you add a portfolio item.
+                </p>
+              )}
+              <Link href="/profile/edit" className="btn btn--secondary btn--block">
+                Edit profile
+              </Link>
             </div>
-            {links.length > 0 && (
-              <div>
-                <dt>Links</dt>
-                <dd className="stack stack--xs">
-                  {links.map((l) => (
-                    <a key={l.href} href={l.href} rel="nofollow noopener noreferrer" target="_blank" className="link">
-                      {l.label} ↗
-                    </a>
-                  ))}
-                </dd>
+          ) : (
+            <>
+              <div className="box stack stack--sm">
+                <h2 className="h4">Work with {first}</h2>
+                <p className="small soft">
+                  Describe what your AI-built site or app still needs. Specialists like {first} respond to Requests that match
+                  their skills.
+                </p>
+                <Link href="/requests/new" className="btn btn--primary btn--block">
+                  Post a Request
+                </Link>
               </div>
-            )}
-          </dl>
-          {isOwner && (
-            <Link href="/profile/edit" className="btn btn--secondary btn--block">
-              Edit profile
-            </Link>
-          )}
-        </div>
-      </header>
-
-      <div className="with-sidebar mt-10">
-        <div className="stack stack--lg min-w-0">
-          {profile.about && (
-            <section>
-              <h2 className="h3">About</h2>
-              <p className="prose mt-3">{profile.about}</p>
-            </section>
-          )}
-          {profile.helpsWith && (
-            <section>
-              <h2 className="h3">Can help with</h2>
-              <p className="prose mt-3">{profile.helpsWith}</p>
-            </section>
-          )}
-
-          <section>
-            <h2 className="h3">Portfolio</h2>
-            {profile.portfolio.length === 0 ? (
-              <p className="small muted mt-3">No portfolio examples yet.</p>
-            ) : (
-              <ul className="grid grid--2 mt-5" role="list">
-                {profile.portfolio.map((item) => (
-                  <li key={item.id}>
-                    {item.imageUploadId && (
-                      // eslint-disable-next-line @next/next/no-img-element
-                      <img src={fileUrl(item.imageUploadId)} alt={item.title} loading="lazy" className="media" />
-                    )}
-                    <h3 className="h4 mt-3">{item.title}</h3>
-                    {item.description && <p className="small soft mt-1">{item.description}</p>}
-                    {item.url && (
-                      <a href={item.url} rel="nofollow noopener noreferrer" target="_blank" className="link small mt-1 block">
-                        {hostname(item.url)} ↗
-                      </a>
-                    )}
-                  </li>
-                ))}
-              </ul>
-            )}
-          </section>
-        </div>
-
-        <aside className="small muted">
-          <p>
-            Specialists get in touch by responding to Requests. If you have something AI built that needs finishing,{" "}
-            <Link href="/requests/new" className="link">
-              post a Request
-            </Link>{" "}
-            and relevant specialists can express interest.
-          </p>
-          {!isOwner && (
-            <div className="mt-6">
               <ReportButton targetType="profile" targetId={profile.id} signedIn={!!user} label="Report this profile" />
-            </div>
+            </>
           )}
         </aside>
       </div>

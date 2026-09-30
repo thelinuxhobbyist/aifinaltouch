@@ -61,19 +61,22 @@ export default async function EditProfilePage({ searchParams }: PageProps<"/prof
         />
         <TextArea
           name="about"
-          label="About"
+          label="Background & approach"
           optional
           rows={6}
-          hint="Your background, the kind of teams you've worked with, how you like to work."
+          hint="Your experience, the kinds of teams and products you've worked on, and how you like to work. Keep the list of services for the next field."
           defaultValue={profile?.about}
           maxLength={4000}
         />
         <TextArea
           name="helpsWith"
-          label="What you can help with"
+          label="How you can help"
           optional
           rows={4}
-          placeholder="Redesigning AI-generated landing pages, fixing UX in Lovable or v0 prototypes, making Claude-built apps production-ready…"
+          hint="Specific jobs you take on, one per line. Shown as a list on your profile."
+          placeholder={
+            "Redesigning AI-generated landing pages\nFixing UX in Lovable or v0 prototypes\nMaking Claude-built apps production-ready"
+          }
           defaultValue={profile?.helpsWith}
           maxLength={2000}
         />

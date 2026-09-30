@@ -1235,23 +1235,40 @@ main {
   border: 1px solid var(--c-line);
   border-radius: var(--radius-sm);
 }
-.profile-head {
-  display: grid;
-  gap: var(--space-8);
-  padding-bottom: var(--space-10);
-  border-bottom: 1px solid var(--c-line);
+.profile-id {
+  display: flex;
+  align-items: center;
+  gap: var(--space-5);
 }
-@media (min-width: 1024px) {
-  .profile-head {
-    grid-template-columns: minmax(0, 1fr) var(--sidebar);
-    gap: var(--space-16);
-  }
+.profile-id__title {
+  margin-top: var(--space-2);
+  font-size: var(--fs-md);
+  font-weight: var(--fw-medium);
+  color: var(--c-brand-ink);
 }
-.profile-head__intro {
-  display: grid;
-  grid-template-columns: auto minmax(0, 1fr);
-  gap: var(--space-6);
-  align-items: start;
+.profile-facts {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-1) 0;
+  font-size: var(--fs-sm);
+  color: var(--c-muted);
+}
+.profile-facts li:not(:last-child)::after {
+  content: "·";
+  margin-inline: var(--space-2);
+  color: var(--c-faint);
+}
+.bullets {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
+  padding-left: 1.125rem;
+  font-size: var(--fs-body);
+  line-height: var(--lh-body);
+  color: var(--c-ink-2);
+}
+.bullets li::marker {
+  color: var(--c-brand);
 }
 
 .byline {
