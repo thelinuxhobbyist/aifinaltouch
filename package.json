@@ -13,7 +13,7 @@
     "db:migrate:dev": "wrangler d1 migrations apply DB --remote",
     "db:migrate:prod": "wrangler d1 migrations apply DB --remote --env production",
     "preview": "opennextjs-cloudflare build && opennextjs-cloudflare preview",
-    "deploy:dev": "opennextjs-cloudflare build && opennextjs-cloudflare deploy",
+    "deploy:dev": "set -a && . ./.env.development.local && set +a && opennextjs-cloudflare build && opennextjs-cloudflare deploy",
     "deploy:prod": "opennextjs-cloudflare build --env production && opennextjs-cloudflare deploy --env production"
   },
   "dependencies": {
