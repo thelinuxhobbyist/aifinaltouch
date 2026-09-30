@@ -27,27 +27,27 @@ export default async function AdminReportsPage({ searchParams }: PageProps<"/adm
 
   return (
     <div>
-      <div className="flex items-baseline justify-between">
-        <h1 className="text-2xl font-semibold tracking-tight">Reports</h1>
-        <Link href={showAll ? "/admin/reports" : "/admin/reports?all=1"} className="link text-sm">
+      <div className="section-head">
+        <h1 className="h2">Reports</h1>
+        <Link href={showAll ? "/admin/reports" : "/admin/reports?all=1"} className="link small">
           {showAll ? "Show open only" : "Show all"}
         </Link>
       </div>
 
       {rows.length === 0 ? (
-        <p className="mt-6 text-sm text-muted">No {showAll ? "" : "open "}reports.</p>
+        <p className="small muted">No {showAll ? "" : "open "}reports.</p>
       ) : (
-        <ul className="mt-6 divide-y divide-line-soft border-y border-line-soft">
+        <ul className="rows">
           {rows.map(({ report, reporterName, reporterEmail }) => {
             const req = report.targetType === "request" ? reqs.find((r) => r.id === report.targetId) : undefined;
             const profile = report.targetType === "profile" ? profiles.find((p) => p.id === report.targetId) : undefined;
             const convo = report.targetType === "message" ? convos.find((c) => c.id === report.targetId) : undefined;
             return (
-              <li key={report.id} className="grid gap-3 py-5 lg:grid-cols-[1fr_auto] lg:gap-8">
-                <div className="min-w-0 text-sm">
-                  <p className="flex flex-wrap items-center gap-2">
+              <li key={report.id} className="row">
+                <div className="row__main small">
+                  <p className="cluster cluster--tight">
                     <StatusBadge status={report.status} />
-                    <span className="font-medium capitalize">{report.targetType === "message" ? "conversation" : report.targetType}</span>
+                    <span className="strong">{report.targetType === "message" ? "Conversation" : report.targetType === "request" ? "Request" : "Profile"}</span>
                     {req && (
                       <Link href={`/requests/${req.slug}`} className="link">
                         {req.title}
@@ -65,13 +65,13 @@ export default async function AdminReportsPage({ searchParams }: PageProps<"/adm
                     )}
                     {(req?.status === "removed" || profile?.status === "removed") && <StatusBadge status="removed" />}
                   </p>
-                  <p className="mt-2 whitespace-pre-line text-ink-soft">{report.reason}</p>
-                  <p className="mt-2 text-xs text-muted">
+                  <p className="prose mt-2">{report.reason}</p>
+                  <p className="xsmall muted mt-2">
                     {reporterName} ({reporterEmail}) · {formatDateTime(report.createdAt)}
                   </p>
                 </div>
                 {report.status === "open" && (
-                  <div className="flex flex-wrap items-start gap-4">
+                  <div className="row__side">
                     {req && req.status !== "removed" && (
                       <AdminButton action={moderateRequest} id={req.id} op="remove" danger>
                         Remove Request

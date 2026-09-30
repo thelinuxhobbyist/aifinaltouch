@@ -20,21 +20,20 @@ export default async function AdminUsersPage({ searchParams }: PageProps<"/admin
 
   return (
     <div>
-      <h1 className="mb-6 text-2xl font-semibold tracking-tight">Users</h1>
+      <h1 className="h2 mb-6">Users</h1>
       <AdminSearch q={q} placeholder="Search name or email" />
       <AdminTable head={["Name", "Email", "Joined", "Status", ""]}>
         {rows.map((u) => (
           <tr key={u.id}>
-            <td className="py-3 pr-4 font-medium">
-              {u.displayName}
-              {u.isAdmin && <span className="ml-2 text-xs text-brand">admin</span>}
+            <td className="strong">
+              {u.displayName} {u.isAdmin && <span className="tag">admin</span>}
             </td>
-            <td className="py-3 pr-4 text-ink-soft">{u.email}</td>
-            <td className="py-3 pr-4 text-muted">{formatDate(u.createdAt)}</td>
-            <td className="py-3 pr-4">
+            <td className="soft">{u.email}</td>
+            <td className="muted">{formatDate(u.createdAt)}</td>
+            <td>
               <StatusBadge status={u.status} />
             </td>
-            <td className="py-3 text-right">
+            <td>
               {u.id !== me?.id &&
                 (u.status === "active" ? (
                   <AdminButton action={moderateUser} id={u.id} op="suspend" danger>

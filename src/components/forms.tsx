@@ -11,7 +11,7 @@ const FormStateContext = createContext<ActionState>({});
 export function ActionForm({
   action,
   children,
-  className,
+  className = "form",
   resetOnSuccess = false,
 }: {
   action: Action;
@@ -30,7 +30,7 @@ export function ActionForm({
     <FormStateContext.Provider value={state}>
       <form ref={ref} action={formAction} className={className} noValidate>
         {state.error && (
-          <p role="alert" className="mb-5 rounded-md border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-800">
+          <p role="alert" className="alert alert--error">
             {state.error}
           </p>
         )}
@@ -44,7 +44,7 @@ export function FormSuccess({ children }: { children?: ReactNode }) {
   const state = useContext(FormStateContext);
   if (!state.ok || (!state.message && !children)) return null;
   return (
-    <p role="status" className="text-sm text-emerald-700">
+    <p role="status" className="success-text">
       {state.message ?? children}
     </p>
   );
@@ -75,16 +75,24 @@ function FieldLabel({ name, label, optional }: { name: string; label: string; op
   return (
     <label htmlFor={name} className="label">
       {label}
-      {optional && <span className="ml-1.5 font-normal text-muted">(optional)</span>}
+      {optional && <span className="label__opt">(optional)</span>}
     </label>
   );
 }
 
-export function TextField({ type = "text", ...props }: FieldProps & { type?: string }) {
+function useInvalid(name: string) {
   const state = useContext(FormStateContext);
-  const invalid = Boolean(state.fieldErrors?.[props.name]);
+  const invalid = Boolean(state.fieldErrors?.[name]);
+  return {
+    "aria-invalid": invalid || undefined,
+    "aria-describedby": invalid ? `${name}-error` : undefined,
+  } as const;
+}
+
+export function TextField({ type = "text", ...props }: FieldProps & { type?: string }) {
+  const aria = useInvalid(props.name);
   return (
-    <div>
+    <div className="field">
       <FieldLabel {...props} />
       {props.hint && <p className="hint">{props.hint}</p>}
       <input
@@ -94,9 +102,8 @@ export function TextField({ type = "text", ...props }: FieldProps & { type?: str
         defaultValue={props.defaultValue ?? ""}
         placeholder={props.placeholder}
         maxLength={props.maxLength}
-        aria-invalid={invalid || undefined}
-        aria-describedby={invalid ? `${props.name}-error` : undefined}
         className="input"
+        {...aria}
       />
       <FieldError name={props.name} />
     </div>
@@ -104,10 +111,9 @@ export function TextField({ type = "text", ...props }: FieldProps & { type?: str
 }
 
 export function TextArea({ rows = 4, ...props }: FieldProps & { rows?: number }) {
-  const state = useContext(FormStateContext);
-  const invalid = Boolean(state.fieldErrors?.[props.name]);
+  const aria = useInvalid(props.name);
   return (
-    <div>
+    <div className="field">
       <FieldLabel {...props} />
       {props.hint && <p className="hint">{props.hint}</p>}
       <textarea
@@ -117,30 +123,9 @@ export function TextArea({ rows = 4, ...props }: FieldProps & { rows?: number })
         defaultValue={props.defaultValue ?? ""}
         placeholder={props.placeholder}
         maxLength={props.maxLength}
-        aria-invalid={invalid || undefined}
-        aria-describedby={invalid ? `${props.name}-error` : undefined}
-        className="input resize-y"
+        className="textarea"
+        {...aria}
       />
-      <FieldError name={props.name} />
-    </div>
-  );
-}
-
-export function SelectField({
-  options,
-  ...props
-}: FieldProps & { options: { value: string; label: string }[] }) {
-  return (
-    <div>
-      <FieldLabel {...props} />
-      {props.hint && <p className="hint">{props.hint}</p>}
-      <select id={props.name} name={props.name} defaultValue={props.defaultValue ?? undefined} className="input">
-        {options.map((o) => (
-          <option key={o.value} value={o.value}>
-            {o.label}
-          </option>
-        ))}
-      </select>
       <FieldError name={props.name} />
     </div>
   );
@@ -152,18 +137,24 @@ export function SubmitButton({
   variant = "primary",
   name,
   value,
-  className = "",
+  block = false,
 }: {
   children: ReactNode;
   pendingLabel?: string;
   variant?: "primary" | "secondary" | "danger";
   name?: string;
   value?: string;
-  className?: string;
+  block?: boolean;
 }) {
   const { pending } = useFormStatus();
   return (
-    <button type="submit" name={name} value={value} disabled={pending} className={`btn-${variant} ${className}`}>
+    <button
+      type="submit"
+      name={name}
+      value={value}
+      disabled={pending}
+      className={`btn btn--${variant}${block ? " btn--block" : ""}`}
+    >
       {pending ? (pendingLabel ?? "Saving…") : children}
     </button>
   );

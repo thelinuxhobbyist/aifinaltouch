@@ -78,31 +78,20 @@ export function ChatThread({
   }, [items.length]);
 
   return (
-    <div className="flex min-h-0 flex-1 flex-col">
-      <div className="flex-1 space-y-1 overflow-y-auto px-1 py-6" aria-live="polite">
-        {items.length === 0 && (
-          <p className="py-10 text-center text-sm text-muted">No messages yet. Say hello to {otherName}.</p>
-        )}
+    <div className="chat__thread">
+      <div className="chat__messages" aria-live="polite">
+        {items.length === 0 && <p className="chat__empty">No messages yet. Say hello to {otherName}.</p>}
         {items.map((m, i) => {
           const day = dayFmt.format(m.createdAt);
           const showDay = i === 0 || day !== dayFmt.format(items[i - 1].createdAt);
+          const bubble = m.removed ? "bubble--removed" : m.mine ? "bubble--mine" : "bubble--theirs";
           return (
             <div key={m.id}>
-              {showDay && <p className="py-4 text-center text-xs font-medium text-muted">{day}</p>}
-              <div className={`flex ${m.mine ? "justify-end" : "justify-start"}`}>
-                <div className="max-w-[85%] sm:max-w-[70%]">
-                  <div
-                    className={`rounded-lg px-3.5 py-2.5 text-[15px] leading-6 whitespace-pre-wrap break-words ${
-                      m.removed
-                        ? "border border-dashed border-line text-muted italic"
-                        : m.mine
-                          ? "bg-brand text-white"
-                          : "bg-mist text-ink"
-                    }`}
-                  >
-                    {m.removed ? "Message removed by a moderator" : m.body}
-                  </div>
-                  <p className={`mt-1 text-[11px] text-muted ${m.mine ? "text-right" : ""}`}>
+              {showDay && <p className="chat__day">{day}</p>}
+              <div className={`msg${m.mine ? " msg--mine" : ""}`}>
+                <div className="msg__inner">
+                  <div className={`bubble ${bubble}`}>{m.removed ? "Message removed by a moderator" : m.body}</div>
+                  <p className="msg__time">
                     {timeFmt.format(m.createdAt)}
                     {m.mine && lastRead?.id === m.id && " · Seen"}
                   </p>
@@ -115,14 +104,14 @@ export function ChatThread({
       </div>
 
       {canSend ? (
-        <form ref={formRef} action={formAction} className="border-t border-line-soft pt-4">
+        <form ref={formRef} action={formAction} className="composer">
           <input type="hidden" name="conversationId" value={conversationId} />
           {state.error && (
-            <p role="alert" className="mb-2 text-sm text-red-700">
+            <p role="alert" className="alert alert--error mb-6">
               {state.error}
             </p>
           )}
-          <div className="flex items-end gap-3">
+          <div className="composer__row">
             <label htmlFor="body" className="sr-only">
               Message
             </label>
@@ -133,7 +122,7 @@ export function ChatThread({
               maxLength={4000}
               required
               placeholder={`Message ${otherName}`}
-              className="input mt-0 max-h-48 min-h-[48px] flex-1 resize-y"
+              className="textarea composer__input"
               onKeyDown={(e) => {
                 if (e.key === "Enter" && !e.shiftKey && !e.nativeEvent.isComposing) {
                   e.preventDefault();
@@ -141,14 +130,14 @@ export function ChatThread({
                 }
               }}
             />
-            <button type="submit" disabled={pending} className="btn-primary h-12">
+            <button type="submit" disabled={pending} className="btn btn--primary composer__send">
               {pending ? "Sending…" : "Send"}
             </button>
           </div>
-          <p className="mt-2 hidden text-xs text-muted sm:block">Enter to send · Shift + Enter for a new line</p>
+          <p className="composer__hint">Enter to send · Shift + Enter for a new line</p>
         </form>
       ) : (
-        <p className="border-t border-line-soft pt-4 text-sm text-muted">You can read this conversation but not reply.</p>
+        <p className="composer small muted">You can read this conversation but not reply.</p>
       )}
     </div>
   );

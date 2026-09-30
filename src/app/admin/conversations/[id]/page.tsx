@@ -26,26 +26,24 @@ export default async function AdminConversationPage({ params }: PageProps<"/admi
     .orderBy(asc(messages.createdAt));
 
   return (
-    <div className="max-w-3xl">
-      <h1 className="text-2xl font-semibold tracking-tight">Conversation</h1>
-      <p className="mt-1 text-sm text-muted">
+    <div className="container--narrow">
+      <h1 className="h2">Conversation</h1>
+      <p className="small muted mt-1">
         Re:{" "}
         <Link href={`/requests/${convo.request.slug}`} className="link">
           {convo.request.title}
         </Link>
       </p>
-      <ul className="mt-6 divide-y divide-line-soft border-y border-line-soft">
+      <ul className="rows mt-6">
         {rows.map(({ message, senderName, senderEmail }) => (
-          <li key={message.id} className="grid gap-2 py-4 sm:grid-cols-[1fr_auto] sm:gap-6">
-            <div className="min-w-0 text-sm">
-              <p className="text-xs text-muted">
-                <span className="font-medium text-ink">{senderName}</span> ({senderEmail}) ·{" "}
+          <li key={message.id} className="row">
+            <div className="row__main small">
+              <p className="xsmall muted">
+                <span className="strong">{senderName}</span> ({senderEmail}) ·{" "}
                 {message.senderUserId === convo.conversation.requesterUserId ? "Requester" : "Specialist"} ·{" "}
                 {formatDateTime(message.createdAt)}
               </p>
-              <p className={`mt-1 whitespace-pre-wrap break-words ${message.removed ? "text-muted line-through" : "text-ink-soft"}`}>
-                {message.body}
-              </p>
+              <p className={`prose mt-1${message.removed ? " struck" : ""}`}>{message.body}</p>
             </div>
             <AdminButton action={moderateMessage} id={message.id} op={message.removed ? "restore" : "remove"} danger={!message.removed}>
               {message.removed ? "Restore" : "Remove"}

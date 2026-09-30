@@ -63,7 +63,7 @@ async function skillsFor(table: "request" | "profile", ids: string[]): Promise<M
 
 // ---------- Requests ----------
 
-export type RequestFilters = { q?: string; skill?: string; remote?: string; page?: number };
+export type RequestFilters = { q?: string; skill?: string; page?: number };
 
 export async function listPublishedRequests(filters: RequestFilters) {
   const db = getDb();
@@ -89,9 +89,6 @@ export async function listPublishedRequests(filters: RequestFilters) {
       ),
     );
   }
-  if (filters.remote === "remote") where.push(ne(requests.remotePreference, "onsite"));
-  if (filters.remote === "onsite") where.push(ne(requests.remotePreference, "remote"));
-
   const page = Math.max(1, filters.page ?? 1);
   const [rows, [{ total }]] = await Promise.all([
     db
@@ -180,7 +177,7 @@ export async function getInterest(requestId: string, specialistUserId: string) {
 
 // ---------- Specialists ----------
 
-export type SpecialistFilters = { q?: string; skill?: string; workMode?: string; page?: number };
+export type SpecialistFilters = { q?: string; skill?: string; page?: number };
 
 export async function listPublishedProfiles(filters: SpecialistFilters, limit = PAGE_SIZE) {
   const db = getDb();
@@ -207,9 +204,6 @@ export async function listPublishedProfiles(filters: SpecialistFilters, limit = 
       ),
     );
   }
-  if (filters.workMode === "remote") where.push(ne(specialistProfiles.workMode, "onsite"));
-  if (filters.workMode === "onsite") where.push(ne(specialistProfiles.workMode, "remote"));
-
   const page = Math.max(1, filters.page ?? 1);
   const base = db
     .select({ profile: specialistProfiles })
@@ -328,19 +322,4 @@ export async function unreadMessageCount(userId: string): Promise<number> {
       ),
     );
   return row?.n ?? 0;
-}
-
-// ---------- Homepage ----------
-
-export const HOMEPAGE_MIN_ITEMS = 3;
-
-export async function homepageContent() {
-  const [specialists, recentRequests] = await Promise.all([
-    listPublishedProfiles({}, 6),
-    listPublishedRequests({}),
-  ]);
-  return {
-    specialists: specialists.total >= HOMEPAGE_MIN_ITEMS ? specialists.rows : [],
-    requests: recentRequests.total >= HOMEPAGE_MIN_ITEMS ? recentRequests.rows.slice(0, 5) : [],
-  };
 }

@@ -1,4 +1,4 @@
-import { ActionForm, FieldError, FormSuccess, SelectField, SubmitButton, TextArea, TextField } from "@/components/forms";
+import { ActionForm, FieldError, FormSuccess, SubmitButton, TextArea, TextField } from "@/components/forms";
 import { SkillPicker } from "@/components/skill-picker";
 import type { Skill } from "@/db/schema";
 import type { RequestWithDetails } from "@/lib/queries";
@@ -6,12 +6,12 @@ import { PROBLEM_TAGS, type ActionState } from "@/lib/validation";
 
 function Step({ n, title, children }: { n: number; title: string; children: React.ReactNode }) {
   return (
-    <section className="grid gap-5 border-t border-line-soft pt-8 sm:grid-cols-[180px_1fr] sm:gap-10">
-      <h2 className="text-sm font-semibold text-ink">
-        <span className="mr-2 text-brand">{n}.</span>
+    <section className="form-section">
+      <h2 className="form-section__title">
+        <span className="form-section__num">{n}</span>
         {title}
       </h2>
-      <div className="space-y-6">{children}</div>
+      <div className="stack">{children}</div>
     </section>
   );
 }
@@ -29,7 +29,7 @@ export function RequestForm({
   const isEdit = Boolean(request);
 
   return (
-    <ActionForm action={action} className="mt-10 space-y-10">
+    <ActionForm action={action} className="form mt-10">
       {request && <input type="hidden" name="requestId" value={request.id} />}
 
       <Step n={1} title="What AI made">
@@ -60,17 +60,14 @@ export function RequestForm({
       </Step>
 
       <Step n={2} title="What isn't right">
-        <fieldset>
+        <fieldset className="field">
           <legend className="label">
-            Which of these sound familiar? <span className="font-normal text-muted">(optional)</span>
+            Which of these sound familiar? <span className="label__opt">(optional)</span>
           </legend>
-          <div className="mt-3 flex flex-wrap gap-2">
+          <div className="chips mt-2">
             {PROBLEM_TAGS.map((tag) => (
-              <label
-                key={tag}
-                className="cursor-pointer rounded-full border border-line px-3 py-1.5 text-sm text-ink-soft has-[:checked]:border-brand has-[:checked]:bg-sky has-[:checked]:text-brand-dark has-[:focus-visible]:outline-2 has-[:focus-visible]:outline-brand"
-              >
-                <input type="checkbox" name="problemTags" value={tag} defaultChecked={tags.has(tag)} className="sr-only" />
+              <label key={tag} className="chip">
+                <input type="checkbox" name="problemTags" value={tag} defaultChecked={tags.has(tag)} />
                 {tag}
               </label>
             ))}
@@ -107,23 +104,12 @@ export function RequestForm({
           label="Relevant skills (optional)"
           hint="Not sure? Leave this blank — specialists will read your description."
         />
-        <div className="grid gap-6 sm:grid-cols-3">
+        <div className="grid grid--2">
           <TextField name="budget" label="Budget" optional placeholder="e.g. £500–£1,000" defaultValue={request?.budget} maxLength={80} />
-          <TextField name="location" label="Location" optional placeholder="e.g. Manchester, UK" defaultValue={request?.location} maxLength={80} />
-          <SelectField
-            name="remotePreference"
-            label="Working arrangement"
-            defaultValue={request?.remotePreference ?? "either"}
-            options={[
-              { value: "either", label: "Remote or on-site" },
-              { value: "remote", label: "Remote" },
-              { value: "onsite", label: "On-site" },
-            ]}
-          />
         </div>
-        <div>
+        <div className="field">
           <label htmlFor="attachments" className="label">
-            Screenshots or files <span className="font-normal text-muted">(optional — images or PDF, up to 5)</span>
+            Screenshots or files <span className="label__opt">(optional — images or PDF, up to 5)</span>
           </label>
           <input
             id="attachments"
@@ -131,23 +117,23 @@ export function RequestForm({
             type="file"
             multiple
             accept="image/jpeg,image/png,image/webp,image/gif,application/pdf"
-            className="mt-2 block w-full text-sm text-ink-soft file:mr-4 file:rounded-md file:border-0 file:bg-sky file:px-4 file:py-2 file:text-sm file:font-medium file:text-brand-dark hover:file:bg-brand-soft"
+            className="file"
           />
           <FieldError name="attachments" />
-          <div className="mt-3 space-y-1.5 text-sm text-ink-soft">
-            <label className="flex items-center gap-2">
-              <input type="radio" name="attachmentVisibility" value="public" defaultChecked className="accent-brand" />
+          <div className="stack stack--xs mt-2">
+            <label className="choice">
+              <input type="radio" name="attachmentVisibility" value="public" defaultChecked />
               Anyone viewing the Request can see new files
             </label>
-            <label className="flex items-center gap-2">
-              <input type="radio" name="attachmentVisibility" value="private" className="accent-brand" />
+            <label className="choice">
+              <input type="radio" name="attachmentVisibility" value="private" />
               Only specialists who express interest can see new files
             </label>
           </div>
         </div>
       </Step>
 
-      <div className="flex flex-col-reverse gap-3 border-t border-line-soft pt-8 sm:flex-row sm:items-center sm:justify-end">
+      <div className="form-actions">
         <FormSuccess />
         {isEdit ? (
           <SubmitButton>Save changes</SubmitButton>

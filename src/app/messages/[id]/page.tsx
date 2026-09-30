@@ -3,6 +3,7 @@ import Link from "next/link";
 import { notFound } from "next/navigation";
 import { eq } from "drizzle-orm";
 import { ReportButton } from "@/components/report-button";
+import { Avatar } from "@/components/ui";
 import { interests, specialistProfiles, users } from "@/db/schema";
 import { requireUserPage } from "@/lib/auth";
 import { getDb } from "@/lib/cf";
@@ -43,39 +44,42 @@ export default async function ConversationPage({ params }: PageProps<"/messages/
   const canSend = isParticipant && user.status === "active" && request.status !== "removed";
 
   return (
-    <div className="container-narrow flex h-[calc(100dvh-4rem)] flex-col py-6">
-      <header className="flex items-start justify-between gap-4 border-b border-line-soft pb-4">
+    <div className="container container--narrow chat">
+      <header className="chat__header">
         <div className="min-w-0">
-          <Link href="/messages" className="text-sm text-muted hover:text-ink">
+          <Link href="/messages" className="breadcrumb">
             ← All messages
           </Link>
-          <h1 className="mt-2 truncate text-xl font-semibold tracking-tight">
-            {iAmRequester && profile ? (
-              <Link href={`/specialists/${profile.slug}`} className="hover:text-brand">
-                {otherName}
-              </Link>
-            ) : (
-              otherName
-            )}
-            {iAmRequester && profile && <span className="ml-2 text-base font-normal text-muted">{profile.title}</span>}
-          </h1>
-          <p className="mt-0.5 truncate text-sm text-muted">
-            Re:{" "}
-            <Link href={`/requests/${request.slug}`} className="hover:text-ink hover:underline">
-              {request.title}
-            </Link>
-          </p>
+          <div className="cluster mt-3">
+            <Avatar name={otherName} />
+            <div className="min-w-0">
+              <h1 className="h3 truncate">
+                {iAmRequester && profile ? (
+                  <Link href={`/specialists/${profile.slug}`} className="hover-brand">
+                    {otherName}
+                  </Link>
+                ) : (
+                  otherName
+                )}
+                {iAmRequester && profile && <span className="small muted"> · {profile.title}</span>}
+              </h1>
+              <p className="small muted truncate">
+                Re:{" "}
+                <Link href={`/requests/${request.slug}`} className="hover-brand">
+                  {request.title}
+                </Link>
+              </p>
+            </div>
+          </div>
         </div>
         {isParticipant && (
-          <div className="shrink-0 pt-7">
+          <div className="shrink-0">
             <ReportButton targetType="message" targetId={conversation.id} signedIn label="Report" />
           </div>
         )}
       </header>
 
-      {!isParticipant && (
-        <p className="mt-4 rounded-md bg-amber-50 px-4 py-2 text-sm text-amber-900">Viewing as admin.</p>
-      )}
+      {!isParticipant && <p className="alert alert--warning mt-4">Viewing as admin.</p>}
 
       <ChatThread
         conversationId={conversation.id}
@@ -86,9 +90,7 @@ export default async function ConversationPage({ params }: PageProps<"/messages/
         sendAction={sendMessage}
       />
 
-      <p className="pt-3 text-center text-xs text-muted">
-        AI Final Touch makes the introduction. Agree on scope, price and payment directly with each other.
-      </p>
+      <p className="chat__note">AI Final Touch makes the introduction. Agree on scope, price and payment directly with each other.</p>
     </div>
   );
 }

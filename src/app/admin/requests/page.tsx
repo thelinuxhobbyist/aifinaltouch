@@ -20,22 +20,22 @@ export default async function AdminRequestsPage({ searchParams }: PageProps<"/ad
 
   return (
     <div>
-      <h1 className="mb-6 text-2xl font-semibold tracking-tight">Requests</h1>
+      <h1 className="h2 mb-6">Requests</h1>
       <AdminSearch q={q} placeholder="Search titles" />
       <AdminTable head={["Title", "Owner", "Created", "Status", ""]}>
         {rows.map(({ request, ownerEmail }) => (
           <tr key={request.id}>
-            <td className="max-w-sm truncate py-3 pr-4">
-              <Link href={`/requests/${request.slug}`} className="font-medium hover:text-brand">
+            <td>
+              <Link href={`/requests/${request.slug}`} className="strong hover-brand">
                 {request.title}
               </Link>
             </td>
-            <td className="py-3 pr-4 text-ink-soft">{ownerEmail}</td>
-            <td className="py-3 pr-4 text-muted">{formatDate(request.createdAt)}</td>
-            <td className="py-3 pr-4">
+            <td className="soft">{ownerEmail}</td>
+            <td className="muted">{formatDate(request.createdAt)}</td>
+            <td>
               <StatusBadge status={request.status} />
             </td>
-            <td className="py-3 text-right">
+            <td>
               {request.status === "removed" ? (
                 <AdminButton action={moderateRequest} id={request.id} op="restore">
                   Restore

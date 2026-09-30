@@ -17,7 +17,7 @@ export function AdminButton({
     <form action={action}>
       <input type="hidden" name="id" value={id} />
       <input type="hidden" name="op" value={op} />
-      <button type="submit" className={`text-sm hover:underline ${danger ? "text-red-700" : "text-brand"}`}>
+      <button type="submit" className={`text-btn${danger ? " text-btn--danger" : ""}`}>
         {children}
       </button>
     </form>
@@ -26,18 +26,16 @@ export function AdminButton({
 
 export function AdminTable({ head, children }: { head: string[]; children: ReactNode }) {
   return (
-    <div className="overflow-x-auto">
-      <table className="w-full min-w-[640px] text-left text-sm">
-        <thead className="border-b border-line text-xs tracking-wide text-muted uppercase">
+    <div className="table-wrap">
+      <table className="table">
+        <thead>
           <tr>
             {head.map((h) => (
-              <th key={h} className="py-2 pr-4 font-medium">
-                {h}
-              </th>
+              <th key={h}>{h}</th>
             ))}
           </tr>
         </thead>
-        <tbody className="divide-y divide-line-soft">{children}</tbody>
+        <tbody>{children}</tbody>
       </table>
     </div>
   );
@@ -45,9 +43,9 @@ export function AdminTable({ head, children }: { head: string[]; children: React
 
 export function AdminSearch({ q, placeholder }: { q?: string; placeholder: string }) {
   return (
-    <form method="get" className="mb-6 flex max-w-md gap-2" role="search">
-      <input name="q" type="search" defaultValue={q} placeholder={placeholder} className="input mt-0" />
-      <button className="btn-secondary">Search</button>
+    <form method="get" className="inline-search" role="search">
+      <input name="q" type="search" defaultValue={q} placeholder={placeholder} className="input input--search" />
+      <button className="btn btn--secondary">Search</button>
     </form>
   );
 }

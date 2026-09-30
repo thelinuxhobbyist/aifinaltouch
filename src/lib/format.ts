@@ -30,6 +30,3 @@ export function excerpt(text: string, max = 180): string {
   const clean = text.replace(/\s+/g, " ").trim();
   return clean.length > max ? `${clean.slice(0, max - 1).trimEnd()}…` : clean;
 }
-
-export const WORK_MODE_LABEL = { remote: "Remote", onsite: "On-site", hybrid: "Remote or on-site" } as const;
-export const REMOTE_PREF_LABEL = { remote: "Remote", onsite: "On-site", either: "Remote or on-site" } as const;

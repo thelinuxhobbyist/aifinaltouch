@@ -20,23 +20,23 @@ export default async function AdminProfilesPage({ searchParams }: PageProps<"/ad
 
   return (
     <div>
-      <h1 className="mb-6 text-2xl font-semibold tracking-tight">Specialist profiles</h1>
+      <h1 className="h2 mb-6">Specialist profiles</h1>
       <AdminSearch q={q} placeholder="Search name or title" />
       <AdminTable head={["Name", "Owner", "Updated", "Status", ""]}>
         {rows.map(({ profile, ownerEmail }) => (
           <tr key={profile.id}>
-            <td className="py-3 pr-4">
-              <Link href={`/specialists/${profile.slug}`} className="font-medium hover:text-brand">
+            <td>
+              <Link href={`/specialists/${profile.slug}`} className="strong hover-brand">
                 {profile.name}
-              </Link>
-              <span className="ml-2 text-muted">{profile.title}</span>
+              </Link>{" "}
+              <span className="muted">{profile.title}</span>
             </td>
-            <td className="py-3 pr-4 text-ink-soft">{ownerEmail}</td>
-            <td className="py-3 pr-4 text-muted">{formatDate(profile.updatedAt)}</td>
-            <td className="py-3 pr-4">
+            <td className="soft">{ownerEmail}</td>
+            <td className="muted">{formatDate(profile.updatedAt)}</td>
+            <td>
               <StatusBadge status={profile.status} />
             </td>
-            <td className="py-3 text-right">
+            <td>
               {profile.status === "removed" ? (
                 <AdminButton action={moderateProfile} id={profile.id} op="restore">
                   Restore

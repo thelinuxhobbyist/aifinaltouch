@@ -15,21 +15,21 @@ export function ReportButton({
 }) {
   if (!signedIn) {
     return (
-      <Link href="/sign-in" className="text-xs text-muted hover:text-ink hover:underline">
+      <Link href="/sign-in" className="text-btn text-btn--muted">
         {label}
       </Link>
     );
   }
   return (
-    <details className="group text-xs">
-      <summary className="cursor-pointer list-none text-muted hover:text-ink hover:underline [&::-webkit-details-marker]:hidden">
+    <details>
+      <summary className="disclosure text-btn text-btn--muted">
         {label}
       </summary>
-      <ActionForm action={submitReport} resetOnSuccess className="mt-3 max-w-md space-y-3 rounded-md border border-line bg-white p-4 text-sm">
+      <ActionForm action={submitReport} resetOnSuccess className="panel stack stack--sm mt-3">
         <input type="hidden" name="targetType" value={targetType} />
         <input type="hidden" name="targetId" value={targetId} />
         <TextArea name="reason" label="What's the problem?" rows={3} maxLength={1000} />
-        <div className="flex items-center gap-3">
+        <div className="cluster">
           <SubmitButton variant="secondary" pendingLabel="Sending…">
             Send report
           </SubmitButton>

@@ -16,12 +16,12 @@ export default async function EditRequestPage({ params }: PageProps<"/requests/[
   if (!request || request.userId !== user.id || request.status === "removed") notFound();
 
   return (
-    <div className="container-narrow py-12">
+    <div className="container container--narrow page">
       <PageHeader
         eyebrow="Edit Request"
         title={request.title}
         actions={
-          <Link href={`/requests/${request.slug}`} className="btn-secondary">
+          <Link href={`/requests/${request.slug}`} className="btn btn--secondary">
             View Request
           </Link>
         }
@@ -30,17 +30,17 @@ export default async function EditRequestPage({ params }: PageProps<"/requests/[
       {request.attachments.length > 0 && (
         <section className="mt-10">
           <h2 className="label">Current attachments</h2>
-          <ul className="mt-3 divide-y divide-line-soft border-y border-line-soft">
+          <ul className="rows mt-3">
             {request.attachments.map((a) => (
-              <li key={a.id} className="flex items-center justify-between gap-4 py-3 text-sm">
-                <span className="min-w-0 truncate">
-                  {a.originalName}
-                  <span className="ml-2 text-muted">{a.visibility === "private" ? "Interested specialists only" : "Public"}</span>
+              <li key={a.id} className="row">
+                <span className="row__main truncate small">
+                  {a.originalName}{" "}
+                  <span className="muted">· {a.visibility === "private" ? "Interested specialists only" : "Public"}</span>
                 </span>
                 <form action={deleteAttachment}>
                   <input type="hidden" name="requestId" value={request.id} />
                   <input type="hidden" name="uploadId" value={a.id} />
-                  <button type="submit" className="text-red-700 hover:underline">
+                  <button type="submit" className="text-btn text-btn--danger">
                     Remove
                   </button>
                 </form>

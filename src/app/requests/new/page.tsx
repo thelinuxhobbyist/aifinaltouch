@@ -12,14 +12,14 @@ export default async function NewRequestPage() {
   const skills = await listSkills();
 
   return (
-    <div className="container-narrow py-12">
+    <div className="container container--narrow page">
       <PageHeader
         eyebrow="Post a Request"
         title="Tell us what AI made"
         description="Describe it the way you'd explain it to a friend. You don't need to know which kind of professional you need — the right specialists will recognise the problem."
       />
       {user.status !== "active" ? (
-        <p className="mt-8 text-sm text-red-700">Your account is suspended, so you can&apos;t post Requests.</p>
+        <p className="alert alert--error mt-8">Your account is suspended, so you can&apos;t post Requests.</p>
       ) : (
         <RequestForm action={createRequest} skills={skills} />
       )}

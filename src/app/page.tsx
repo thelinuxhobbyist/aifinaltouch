@@ -1,182 +1,219 @@
 import Link from "next/link";
-import { RequestList } from "@/components/request-list";
-import { SkillTags } from "@/components/ui";
+import { Avatar, CheckIcon } from "@/components/ui";
 import { track } from "@/lib/analytics";
 import { getCurrentUser } from "@/lib/auth";
-import { homepageContent } from "@/lib/queries";
 
-const MISSING = [
-  { title: "Design", body: "It works, but it looks like every other AI template." },
-  { title: "UX", body: "The flows are confusing, or fall apart on mobile." },
-  { title: "Functionality", body: "Something important is missing or half-finished." },
-  { title: "Polish", body: "Details, copy and consistency that make it feel real." },
-  { title: "Technical expertise", body: "Security, performance and getting it production-ready." },
-  { title: "Professional judgement", body: "Someone to tell you what's actually wrong." },
+const WE_DO = [
+  "Help you describe what's not quite right",
+  "Show it to people who finish AI-built work",
+  "Introduce you to the ones who want to help",
 ];
 
-const EXAMPLES = [
-  "An AI-generated website that looks generic",
-  "An AI-built app with poor UX",
-  "A prototype that needs finishing",
-  "AI-generated code that needs a professional review",
-  "An AI-built product that needs to be production-ready",
+const YOU_DO = [
+  "Choose who you want to talk to",
+  "Agree the scope, timing and price",
+  "Pay them directly — we take nothing",
 ];
+
+const STEPS = [
+  ["Tell us what you built", "What AI made, and what isn't right yet. Plain language is perfect."],
+  ["Someone who can help gets in touch", "Specialists who finish AI-built work read it and say they'd like to help."],
+  ["Talk, then arrange it directly", "Chat here to get to know each other. The work itself is between the two of you."],
+];
+
+const SYMPTOMS = [
+  "It looks like every other AI template",
+  "It's confusing on mobile",
+  "A feature is half-finished",
+  "It breaks and I don't know why",
+  "It isn't ready for real customers",
+  "Something just feels off",
+];
+
+function IntroductionPreview() {
+  return (
+    <div className="intro" aria-hidden>
+      <div className="intro__card">
+        <div className="cluster cluster--tight">
+          <Avatar name="You" size="sm" />
+          <span className="small strong">Your booking website</span>
+        </div>
+        <div className="split-figures">
+          <div>
+            <p className="split-figures__num">90%</p>
+            <p className="xsmall muted">Built with AI</p>
+          </div>
+          <div className="split-figures__human">
+            <p className="split-figures__num">10%</p>
+            <p className="xsmall">Needs a human</p>
+          </div>
+        </div>
+        <div className="ratio ratio--lg">
+          <div className="ratio__human" />
+        </div>
+      </div>
+
+      <div className="intro__link">
+        <span className="pill">Introduced by AI Final Touch</span>
+      </div>
+
+      <div className="intro__card">
+        <div className="cluster cluster--tight">
+          <Avatar name="Maya Chen" size="sm" />
+          <span className="small">
+            <span className="strong">Maya</span> <span className="muted">· Product designer</span>
+          </span>
+        </div>
+        <div className="stack stack--xs mt-4">
+          <div className="msg">
+            <div className="bubble bubble--theirs small">I&apos;ve polished a few AI-built sites like this. Happy to take a look.</div>
+          </div>
+          <div className="msg msg--mine">
+            <div className="bubble bubble--mine small">Great — can we talk this week?</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+}
 
 export default async function HomePage() {
-  const [user, content] = await Promise.all([getCurrentUser(), homepageContent()]);
+  const user = await getCurrentUser();
   await track("homepage_visit", { userId: user?.id });
 
   return (
     <>
-      <section className="relative overflow-hidden border-b border-line-soft bg-gradient-to-b from-sky via-mist to-white">
-        <div className="container-page py-20 sm:py-28">
-          <p className="eyebrow">For AI-built websites and apps</p>
-          <h1 className="mt-5 max-w-3xl text-4xl leading-[1.08] font-semibold tracking-tight text-ink sm:text-6xl">
-            AI got you 90% there. Find the human for the other 10%.
-          </h1>
-          <p className="mt-6 max-w-2xl text-lg leading-8 text-ink-soft">
-            Post what you built with AI and what isn&apos;t right yet. Designers, developers and other professionals who
-            finish AI-generated work can find it, get in touch and help you get it done.
-          </p>
-          <div className="mt-9 flex flex-col gap-3 sm:flex-row">
-            <Link href="/requests/new" className="btn-primary px-6 py-3 text-[15px]">
-              Post a Request
-            </Link>
-            <Link href="/specialists" className="btn-secondary px-6 py-3 text-[15px]">
-              Find a Specialist
-            </Link>
-          </div>
-
-          <div className="mt-16 max-w-xl" aria-hidden>
-            <div className="flex h-2 overflow-hidden rounded-full bg-white">
-              <div className="w-[90%] bg-brand-soft" />
-              <div className="w-[10%] bg-brand" />
+      <section className="hero">
+        <div className="container hero__inner">
+          <div>
+            <h1 className="display">
+              AI got you 90% there. Find the <em>human</em> for the other 10%.
+            </h1>
+            <p className="lead mt-6">
+              Built something with AI but stuck on the last part? Tell us what you built and what&apos;s not quite right,
+              and connect with someone who can help finish it.
+            </p>
+            <p className="promise mt-6">
+              <span className="promise__dot" aria-hidden />
+              We make the introduction. You arrange the work directly.
+            </p>
+            <div className="cluster hero__actions">
+              <Link href="/requests/new" className="btn btn--primary btn--lg">
+                Tell us what you built
+              </Link>
+              <Link href="/profile/edit" className="btn btn--ghost btn--lg">
+                I finish AI-built work →
+              </Link>
             </div>
-            <div className="mt-2 flex justify-between text-xs font-medium text-muted">
-              <span>Made with AI</span>
-              <span className="text-brand">Finished by a human</span>
-            </div>
+            <ul className="hero__proof" role="list">
+              {["Free", "No bidding", "No commission"].map((p) => (
+                <li key={p}>
+                  <CheckIcon />
+                  {p}
+                </li>
+              ))}
+            </ul>
           </div>
+          <IntroductionPreview />
         </div>
       </section>
 
-      <section className="container-page py-20 sm:py-24">
-        <div className="grid gap-12 lg:grid-cols-[360px_1fr] lg:gap-20">
-          <div>
-            <h2 className="text-3xl font-semibold tracking-tight">AI can create the first version.</h2>
-            <p className="mt-4 text-base leading-7 text-muted">
-              Sometimes the last part needs a person who does this for a living. You don&apos;t need to know which kind of
-              professional — just describe what&apos;s not right.
+      <section className="section">
+        <div className="container">
+          <div className="section-intro">
+            <h2 className="h2">
+              We make the introduction. <em>You</em> arrange the work directly.
+            </h2>
+            <p className="body muted mt-4">
+              This isn&apos;t a freelance marketplace. We don&apos;t manage projects, set prices or sit in the middle. We
+              just help the right two people find each other.
             </p>
           </div>
-          <dl className="grid gap-x-12 gap-y-8 sm:grid-cols-2">
-            {MISSING.map((m) => (
-              <div key={m.title} className="border-t border-line pt-4">
-                <dt className="font-semibold">{m.title}</dt>
-                <dd className="mt-1 text-[15px] leading-6 text-muted">{m.body}</dd>
-              </div>
-            ))}
-          </dl>
+          <div className="handoff mt-12">
+            <div className="handoff__side">
+              <p className="label-caps">What we do</p>
+              <ul className="checklist mt-4">
+                {WE_DO.map((t) => (
+                  <li key={t}>
+                    <CheckIcon />
+                    {t}
+                  </li>
+                ))}
+              </ul>
+            </div>
+            <div className="handoff__side handoff__side--you">
+              <p className="label-caps">What you do, directly</p>
+              <ul className="checklist mt-4">
+                {YOU_DO.map((t) => (
+                  <li key={t}>
+                    <CheckIcon />
+                    {t}
+                  </li>
+                ))}
+              </ul>
+            </div>
+          </div>
         </div>
       </section>
 
-      <section className="border-y border-line-soft bg-mist">
-        <div className="container-page py-20 sm:py-24">
-          <h2 className="text-3xl font-semibold tracking-tight">How it works</h2>
-          <ol className="mt-12 grid gap-10 md:grid-cols-3 md:gap-12">
-            {[
-              ["Post what AI created", "Tell people what you made, what you like about it and what isn't right."],
-              ["Find someone who can finish it", "Specialists browse Requests and say they're interested. You see their profile and work."],
-              ["Chat and arrange the work", "Talk it through on AI Final Touch, then agree the work, price and payment between you."],
-            ].map(([title, body], i) => (
-              <li key={title}>
-                <span className="text-sm font-semibold text-brand">0{i + 1}</span>
-                <h3 className="mt-3 text-lg font-semibold">{title}</h3>
-                <p className="mt-2 text-[15px] leading-7 text-muted">{body}</p>
+      <section className="section section--tinted">
+        <div className="container">
+          <h2 className="h2">
+            Three steps. <em>That&apos;s it.</em>
+          </h2>
+          <ol className="steps">
+            {STEPS.map(([title, body], i) => (
+              <li key={title} className="step">
+                <span className="step__num">{i + 1}</span>
+                <h3 className="h3 step__title">{title}</h3>
+                <p className="step__text">{body}</p>
               </li>
             ))}
           </ol>
         </div>
       </section>
 
-      <section className="container-page py-20 sm:py-24">
-        <div className="grid gap-12 lg:grid-cols-2 lg:gap-20">
+      <section className="section">
+        <div className="container split">
           <div>
-            <p className="eyebrow">Starting with one thing</p>
-            <h2 className="mt-3 text-3xl font-semibold tracking-tight">Websites and apps built with AI</h2>
-            <p className="mt-4 text-base leading-7 text-muted">
-              Whether it came from Claude, ChatGPT, Lovable, v0, Bolt or Cursor — if it&apos;s a website or app that needs a
-              professional finish, it belongs here.
+            <h2 className="h2">
+              You don&apos;t need to know <em>who</em> you need.
+            </h2>
+            <p className="body muted mt-4">
+              Designer, developer, UX, something else? Don&apos;t worry about it. Describe what&apos;s wrong in your own
+              words and the right person will recognise it.
             </p>
+            <Link href="/requests/new" className="btn btn--primary mt-8">
+              Describe what&apos;s not right
+            </Link>
           </div>
-          <ul className="space-y-0 divide-y divide-line-soft border-y border-line-soft">
-            {EXAMPLES.map((e) => (
-              <li key={e} className="flex items-center gap-3 py-4 text-[15px]">
-                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#1d4ed8" strokeWidth="2.5" aria-hidden>
-                  <path d="M5 12.5l4.5 4.5L19 7.5" strokeLinecap="round" strokeLinejoin="round" />
-                </svg>
-                {e}
-              </li>
-            ))}
-          </ul>
+          <div>
+            <p className="label-caps">Sound familiar?</p>
+            <ul className="symptoms mt-4" role="list">
+              {SYMPTOMS.map((s) => (
+                <li key={s} className="symptom">
+                  “{s}”
+                </li>
+              ))}
+            </ul>
+          </div>
         </div>
       </section>
 
-      {content.requests.length > 0 && (
-        <section className="container-page pb-20">
-          <div className="flex items-baseline justify-between gap-4 pb-6">
-            <h2 className="text-2xl font-semibold tracking-tight">Recent Requests</h2>
-            <Link href="/requests" className="link text-sm">
-              Browse all
+      <section className="container">
+        <div className="cta-band">
+          <div className="cta-band__col">
+            <h2 className="h3">Stuck on the last 10%?</h2>
+            <p className="cta-band__text">It takes a few minutes, it&apos;s free, and you decide who you talk to.</p>
+            <Link href="/requests/new" className="btn btn--inverse">
+              Tell us what you built
             </Link>
           </div>
-          <RequestList requests={content.requests} />
-        </section>
-      )}
-
-      {content.specialists.length > 0 && (
-        <section className="container-page pb-20">
-          <div className="flex items-baseline justify-between gap-4 pb-6">
-            <h2 className="text-2xl font-semibold tracking-tight">Specialists</h2>
-            <Link href="/specialists" className="link text-sm">
-              See all
-            </Link>
-          </div>
-          <ul className="grid gap-x-12 gap-y-8 border-t border-line-soft pt-8 sm:grid-cols-2 lg:grid-cols-3">
-            {content.specialists.map((p) => (
-              <li key={p.id}>
-                <Link href={`/specialists/${p.slug}`} className="group block">
-                  <p className="font-semibold group-hover:text-brand">{p.name}</p>
-                  <p className="text-sm text-muted">{p.title}</p>
-                  <p className="mt-2 text-[15px] leading-6 text-ink-soft">{p.positioning}</p>
-                </Link>
-                <div className="mt-3">
-                  <SkillTags skills={p.skills} limit={3} />
-                </div>
-              </li>
-            ))}
-          </ul>
-        </section>
-      )}
-
-      <section className="container-page">
-        <div className="grid gap-10 rounded-lg bg-gradient-to-br from-brand to-brand-dark px-8 py-14 text-white sm:px-14 md:grid-cols-2">
-          <div>
-            <h2 className="text-2xl font-semibold tracking-tight">Built something with AI?</h2>
-            <p className="mt-3 leading-7 text-blue-100">
-              Describe it in plain language. It takes a few minutes and it&apos;s free.
-            </p>
-            <Link href="/requests/new" className="btn mt-6 bg-white text-brand-dark hover:bg-sky">
-              Post a Request
-            </Link>
-          </div>
-          <div>
-            <h2 className="text-2xl font-semibold tracking-tight">Finish AI-built work?</h2>
-            <p className="mt-3 leading-7 text-blue-100">
-              Create a profile, show your work and respond to Requests that fit your skills.
-            </p>
-            <Link href="/profile/edit" className="btn mt-6 border border-white/40 text-white hover:bg-white/10">
-              Become a Specialist
+          <div className="cta-band__col">
+            <h2 className="h3">Good at the last 10%?</h2>
+            <p className="cta-band__text">Create a profile and get introduced to people whose AI-built work needs you.</p>
+            <Link href="/profile/edit" className="btn btn--outline-inverse">
+              Become a specialist
             </Link>
           </div>
         </div>

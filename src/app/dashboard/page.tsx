@@ -13,12 +13,12 @@ export const metadata: Metadata = { title: "Dashboard", robots: { index: false }
 
 function Section({ title, action, children }: { title: string; action?: React.ReactNode; children: React.ReactNode }) {
   return (
-    <section className="border-t border-line pt-8">
-      <div className="flex items-baseline justify-between gap-4">
-        <h2 className="text-lg font-semibold tracking-tight">{title}</h2>
+    <section className="divider-top">
+      <div className="section-head">
+        <h2 className="h3">{title}</h2>
         {action}
       </div>
-      <div className="mt-4">{children}</div>
+      {children}
     </section>
   );
 }
@@ -49,54 +49,54 @@ export default async function DashboardPage() {
   const unreadConvos = convos.filter((c) => c.unread > 0);
 
   return (
-    <div className="container-page py-12">
-      <div className="flex flex-col gap-4 pb-10 sm:flex-row sm:items-end sm:justify-between">
-        <div>
+    <div className="container page">
+      <div className="page-header mb-8">
+        <div className="page-header__text">
           <p className="eyebrow">Dashboard</p>
-          <h1 className="mt-2 text-3xl font-semibold tracking-tight">Hello, {user.displayName.split(" ")[0]}</h1>
+          <h1 className="h1">Hello, {user.displayName.split(" ")[0]}</h1>
         </div>
-        <div className="flex flex-wrap gap-3">
-          <Link href="/requests/new" className="btn-primary">
+        <div className="page-header__actions">
+          <Link href="/requests/new" className="btn btn--primary">
             Post a Request
           </Link>
-          <Link href="/requests" className="btn-secondary">
+          <Link href="/requests" className="btn btn--secondary">
             Browse Requests
           </Link>
         </div>
       </div>
 
       {user.status !== "active" && (
-        <p className="mb-8 rounded-md border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-800">
+        <p className="alert alert--error mb-8">
           Your account is suspended. You can read existing content but can&apos;t post, respond or send messages.
         </p>
       )}
 
-      <div className="grid gap-12 lg:grid-cols-[1fr_320px]">
-        <div className="space-y-12">
+      <div className="with-sidebar">
+        <div className="stack stack--xl min-w-0">
           <Section
             title="Messages"
             action={
-              <Link href="/messages" className="link text-sm">
-                All messages
+              <Link href="/messages" className="link small">
+                All messages →
               </Link>
             }
           >
             {convos.length === 0 ? (
-              <p className="text-sm text-muted">Your conversations will appear here when you connect with a specialist.</p>
+              <p className="small muted">Your conversations will appear here when you connect with a specialist.</p>
             ) : unreadConvos.length === 0 ? (
-              <p className="text-sm text-muted">
+              <p className="small muted">
                 You&apos;re all caught up across {convos.length} conversation{convos.length === 1 ? "" : "s"}.
               </p>
             ) : (
-              <ul className="divide-y divide-line-soft">
+              <ul className="rows rows--flush">
                 {unreadConvos.slice(0, 5).map((c) => (
                   <li key={c.conversation.id}>
-                    <Link href={`/messages/${c.conversation.id}`} className="flex justify-between gap-4 py-3 text-sm hover:text-brand">
-                      <span className="truncate">
-                        <span className="font-semibold">{c.otherName}</span>
-                        <span className="text-muted"> · {c.requestTitle}</span>
+                    <Link href={`/messages/${c.conversation.id}`} className="row hover-brand">
+                      <span className="row__main truncate small">
+                        <span className="strong">{c.otherName}</span>
+                        <span className="muted"> · {c.requestTitle}</span>
                       </span>
-                      <span className="shrink-0 font-medium text-brand">{c.unread} new</span>
+                      <span className="count">{c.unread}</span>
                     </Link>
                   </li>
                 ))}
@@ -106,7 +106,7 @@ export default async function DashboardPage() {
 
           <Section title="My Requests">
             {myRequests.length === 0 ? (
-              <p className="text-sm text-muted">
+              <p className="small muted">
                 You haven&apos;t posted a Request yet.{" "}
                 <Link href="/requests/new" className="link">
                   Tell us what AI made
@@ -114,19 +114,17 @@ export default async function DashboardPage() {
                 .
               </p>
             ) : (
-              <ul className="divide-y divide-line-soft">
+              <ul className="rows">
                 {myRequests.map(({ request, interestCount }) => (
-                  <li key={request.id} className="flex flex-col gap-1 py-4 sm:flex-row sm:items-center sm:justify-between sm:gap-6">
-                    <div className="min-w-0">
-                      <Link href={`/requests/${request.slug}`} className="font-medium hover:text-brand">
+                  <li key={request.id} className="row">
+                    <div className="row__main">
+                      <Link href={`/requests/${request.slug}`} className="strong hover-brand">
                         {request.title}
                       </Link>
-                      <p className="mt-0.5 text-xs text-muted">Created {formatDate(request.createdAt)}</p>
+                      <p className="xsmall muted mt-1">Created {formatDate(request.createdAt)}</p>
                     </div>
-                    <div className="flex shrink-0 items-center gap-4 text-sm">
-                      <span className="text-muted">
-                        {interestCount} interested
-                      </span>
+                    <div className="row__side">
+                      <span className="muted">{interestCount} interested</span>
                       <StatusBadge status={request.status} />
                     </div>
                   </li>
@@ -137,7 +135,7 @@ export default async function DashboardPage() {
 
           <Section title="My Interests">
             {myInterests.length === 0 ? (
-              <p className="text-sm text-muted">
+              <p className="small muted">
                 Requests you respond to as a specialist will appear here.{" "}
                 <Link href="/requests" className="link">
                   Browse Requests
@@ -145,16 +143,16 @@ export default async function DashboardPage() {
                 .
               </p>
             ) : (
-              <ul className="divide-y divide-line-soft">
+              <ul className="rows">
                 {myInterests.map(({ interest, request, conversationId }) => (
-                  <li key={interest.id} className="flex flex-col gap-1 py-4 sm:flex-row sm:items-center sm:justify-between sm:gap-6">
-                    <div className="min-w-0">
-                      <Link href={`/requests/${request.slug}`} className="font-medium hover:text-brand">
+                  <li key={interest.id} className="row">
+                    <div className="row__main">
+                      <Link href={`/requests/${request.slug}`} className="strong hover-brand">
                         {request.title}
                       </Link>
-                      <p className="mt-0.5 text-xs text-muted">Interested {timeAgo(interest.createdAt)}</p>
+                      <p className="xsmall muted mt-1">Interested {timeAgo(interest.createdAt)}</p>
                     </div>
-                    <div className="flex shrink-0 items-center gap-4 text-sm">
+                    <div className="row__side">
                       {request.status !== "published" && <StatusBadge status={request.status} />}
                       {conversationId && (
                         <Link href={`/messages/${conversationId}`} className="link">
@@ -169,47 +167,47 @@ export default async function DashboardPage() {
           </Section>
         </div>
 
-        <aside className="space-y-10">
-          <Section title="Specialist profile">
+        <aside className="stack stack--lg">
+          <div className="box stack stack--sm">
+            <h2 className="h4">Specialist profile</h2>
             {profile ? (
-              <div className="space-y-3 text-sm">
-                <p className="flex items-center gap-2">
-                  <span className="font-medium">{profile.name}</span> <StatusBadge status={profile.status} />
+              <>
+                <p className="cluster cluster--tight small">
+                  <span className="strong">{profile.name}</span> <StatusBadge status={profile.status} />
                 </p>
-                <div className="flex flex-wrap gap-2">
-                  <Link href="/profile/edit" className="btn-secondary">
+                <div className="cluster cluster--tight">
+                  <Link href="/profile/edit" className="btn btn--secondary btn--sm">
                     Edit profile
                   </Link>
                   {profile.status === "published" && (
-                    <Link href={`/specialists/${profile.slug}`} className="btn-ghost">
+                    <Link href={`/specialists/${profile.slug}`} className="btn btn--ghost btn--sm">
                       View
                     </Link>
                   )}
                 </div>
-              </div>
+              </>
             ) : (
-              <div className="space-y-3 text-sm text-muted">
-                <p>Do you finish AI-built websites or apps? Create a profile to respond to Requests.</p>
-                <Link href="/profile/edit" className="btn-secondary">
+              <>
+                <p className="small muted">Do you finish AI-built websites or apps? Create a profile to respond to Requests.</p>
+                <Link href="/profile/edit" className="btn btn--secondary btn--block">
                   Create a specialist profile
                 </Link>
-              </div>
+              </>
             )}
-          </Section>
+          </div>
 
-          <Section title="Email notifications">
-            <form action={setEmailNotifications} className="space-y-3 text-sm">
-              <p className="text-muted">
-                {user.emailNotifications
-                  ? `We email ${user.email} when someone is interested in your Request or sends you a message.`
-                  : "Email notifications are off. You'll still see everything on the site."}
-              </p>
-              <input type="hidden" name="enabled" value={user.emailNotifications ? "0" : "1"} />
-              <button type="submit" className="btn-secondary">
-                {user.emailNotifications ? "Turn off emails" : "Turn on emails"}
-              </button>
-            </form>
-          </Section>
+          <form action={setEmailNotifications} className="box stack stack--sm">
+            <h2 className="h4">Email notifications</h2>
+            <p className="small muted">
+              {user.emailNotifications
+                ? `We email ${user.email} when someone is interested in your Request or sends you a message.`
+                : "Email notifications are off. You'll still see everything on the site."}
+            </p>
+            <input type="hidden" name="enabled" value={user.emailNotifications ? "0" : "1"} />
+            <button type="submit" className="btn btn--secondary btn--sm">
+              {user.emailNotifications ? "Turn off emails" : "Turn on emails"}
+            </button>
+          </form>
         </aside>
       </div>
     </div>

@@ -8,7 +8,7 @@ export const metadata: Metadata = { title: "Create your account", robots: { inde
 export default function SignUpPage() {
   if (!clerkEnabled) return <AuthUnavailable />;
   return (
-    <div className="container-page flex justify-center py-16">
+    <div className="container page auth-page">
       <SignUp />
     </div>
   );

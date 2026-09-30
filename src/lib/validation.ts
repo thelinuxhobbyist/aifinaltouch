@@ -60,8 +60,6 @@ export const requestSchema = z.object({
   skillIds,
   url: optionalUrl,
   budget: optionalText(80),
-  location: optionalText(80),
-  remotePreference: z.enum(["remote", "onsite", "either"]).default("either"),
 });
 
 export const profileSchema = z.object({
@@ -71,7 +69,6 @@ export const profileSchema = z.object({
   about: trimmed(4000).optional().default(""),
   helpsWith: trimmed(2000).optional().default(""),
   location: optionalText(80),
-  workMode: z.enum(["remote", "onsite", "hybrid"]).default("remote"),
   websiteUrl: optionalUrl,
   linkedinUrl: optionalUrl,
   githubUrl: optionalUrl,

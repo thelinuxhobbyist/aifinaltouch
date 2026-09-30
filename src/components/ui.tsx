@@ -7,23 +7,38 @@ export function SkillTags({ skills, limit }: { skills: Pick<Skill, "id" | "name"
   const shown = limit ? skills.slice(0, limit) : skills;
   const rest = skills.length - shown.length;
   return (
-    <ul className="flex flex-wrap gap-1.5" aria-label="Skills">
+    <ul className="tags" aria-label="Skills">
       {shown.map((s) => (
         <li key={s.id} className="tag">
           {s.name}
         </li>
       ))}
-      {rest > 0 && <li className="tag bg-line-soft text-muted">+{rest}</li>}
+      {rest > 0 && <li className="tag tag--more">+{rest}</li>}
     </ul>
+  );
+}
+
+export function Avatar({ name, size }: { name: string; size?: "sm" | "lg" }) {
+  const initials = name
+    .split(/\s+/)
+    .filter(Boolean)
+    .slice(0, 2)
+    .map((w) => w[0]!.toUpperCase())
+    .join("");
+  const tone = [...name].reduce((sum, c) => sum + c.charCodeAt(0), 0) % 4;
+  return (
+    <span className={`avatar avatar--tone-${tone}${size ? ` avatar--${size}` : ""}`} aria-hidden>
+      {initials || "?"}
+    </span>
   );
 }
 
 export function EmptyState({ title, children, action }: { title: string; children?: ReactNode; action?: ReactNode }) {
   return (
-    <div className="border-y border-line-soft py-12 text-center">
-      <p className="text-base font-semibold text-ink">{title}</p>
-      {children && <div className="mx-auto mt-2 max-w-md text-sm leading-6 text-muted">{children}</div>}
-      {action && <div className="mt-5">{action}</div>}
+    <div className="empty">
+      <p className="empty__title">{title}</p>
+      {children && <div className="empty__text">{children}</div>}
+      {action && <div className="cluster empty__actions">{action}</div>}
     </div>
   );
 }
@@ -35,18 +50,18 @@ export function PageHeader({
   actions,
 }: {
   eyebrow?: string;
-  title: string;
+  title: ReactNode;
   description?: ReactNode;
   actions?: ReactNode;
 }) {
   return (
-    <div className="flex flex-col gap-4 border-b border-line-soft pb-8 sm:flex-row sm:items-end sm:justify-between">
-      <div className="max-w-2xl">
+    <div className="page-header">
+      <div className="page-header__text">
         {eyebrow && <p className="eyebrow">{eyebrow}</p>}
-        <h1 className="mt-2 text-3xl font-semibold tracking-tight text-ink sm:text-4xl">{title}</h1>
-        {description && <div className="mt-3 text-base leading-7 text-muted">{description}</div>}
+        <h1 className="h1">{title}</h1>
+        {description && <div className="lead">{description}</div>}
       </div>
-      {actions && <div className="flex shrink-0 flex-wrap gap-3">{actions}</div>}
+      {actions && <div className="page-header__actions">{actions}</div>}
     </div>
   );
 }
@@ -74,19 +89,19 @@ export function Pagination({
     return qs ? `${basePath}?${qs}` : basePath;
   };
   return (
-    <nav className="mt-10 flex items-center justify-between text-sm" aria-label="Pagination">
+    <nav className="pagination" aria-label="Pagination">
       {page > 1 ? (
-        <Link href={href(page - 1)} className="btn-secondary">
+        <Link href={href(page - 1)} className="btn btn--secondary">
           ← Previous
         </Link>
       ) : (
         <span />
       )}
-      <span className="text-muted">
+      <span>
         Page {page} of {pages}
       </span>
       {page < pages ? (
-        <Link href={href(page + 1)} className="btn-secondary">
+        <Link href={href(page + 1)} className="btn btn--secondary">
           Next →
         </Link>
       ) : (
@@ -96,22 +111,27 @@ export function Pagination({
   );
 }
 
+const BADGE_TONE: Record<string, string> = {
+  published: "success",
+  active: "success",
+  resolved: "success",
+  draft: "warning",
+  open: "warning",
+  closed: "neutral",
+  hidden: "neutral",
+  dismissed: "neutral",
+  removed: "danger",
+  suspended: "danger",
+};
+
 export function StatusBadge({ status }: { status: string }) {
-  const styles: Record<string, string> = {
-    draft: "bg-amber-50 text-amber-800",
-    published: "bg-emerald-50 text-emerald-800",
-    closed: "bg-slate-100 text-slate-700",
-    removed: "bg-red-50 text-red-700",
-    hidden: "bg-slate-100 text-slate-700",
-    open: "bg-amber-50 text-amber-800",
-    resolved: "bg-emerald-50 text-emerald-800",
-    dismissed: "bg-slate-100 text-slate-700",
-    active: "bg-emerald-50 text-emerald-800",
-    suspended: "bg-red-50 text-red-700",
-  };
+  return <span className={`badge badge--${BADGE_TONE[status] ?? "neutral"}`}>{status}</span>;
+}
+
+export function CheckIcon() {
   return (
-    <span className={`inline-flex rounded px-2 py-0.5 text-xs font-medium capitalize ${styles[status] ?? "bg-slate-100 text-slate-700"}`}>
-      {status}
-    </span>
+    <svg className="icon-check" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" aria-hidden>
+      <path d="M5 12.5l4.5 4.5L19 7.5" strokeLinecap="round" strokeLinejoin="round" />
+    </svg>
   );
 }

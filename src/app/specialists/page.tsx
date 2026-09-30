@@ -1,8 +1,7 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import { FilterBar } from "@/components/filter-bar";
-import { EmptyState, PageHeader, Pagination, SkillTags } from "@/components/ui";
-import { WORK_MODE_LABEL } from "@/lib/format";
+import { Avatar, EmptyState, PageHeader, Pagination, SkillTags } from "@/components/ui";
 import { listPublishedProfiles, listSkills, PAGE_SIZE } from "@/lib/queries";
 import { pageParam, param } from "@/lib/search-params";
 
@@ -13,18 +12,22 @@ export const metadata: Metadata = {
 
 export default async function SpecialistsPage({ searchParams }: PageProps<"/specialists">) {
   const sp = await searchParams;
-  const filters = { q: param(sp.q), skill: param(sp.skill), workMode: param(sp.work) };
+  const filters = { q: param(sp.q), skill: param(sp.skill) };
   const [result, skills] = await Promise.all([listPublishedProfiles({ ...filters, page: pageParam(sp.page) }), listSkills()]);
-  const filtered = Boolean(filters.q || filters.skill || filters.workMode);
+  const filtered = Boolean(filters.q || filters.skill);
 
   return (
-    <div className="container-page py-12">
+    <div className="container page">
       <PageHeader
         eyebrow="Specialists"
-        title="Find someone to finish it"
+        title={
+          <>
+            Find someone to <em>finish</em> it
+          </>
+        }
         description="Professionals who improve, review and finish AI-built websites and apps. Post a Request and the right people can come to you."
         actions={
-          <Link href="/requests/new" className="btn-primary">
+          <Link href="/requests/new" className="btn btn--primary">
             Post a Request
           </Link>
         }
@@ -34,13 +37,6 @@ export default async function SpecialistsPage({ searchParams }: PageProps<"/spec
         action="/specialists"
         q={filters.q}
         skill={filters.skill}
-        location={filters.workMode}
-        locationName="work"
-        locationOptions={[
-          { value: "", label: "Any location" },
-          { value: "remote", label: "Works remotely" },
-          { value: "onsite", label: "Works on-site" },
-        ]}
         skills={skills}
         placeholder="Search by name, skill or keyword"
       />
@@ -52,14 +48,14 @@ export default async function SpecialistsPage({ searchParams }: PageProps<"/spec
           <EmptyState
             title="Specialists are joining now"
             action={
-              <div className="flex flex-wrap justify-center gap-3">
-                <Link href="/requests/new" className="btn-primary">
+              <>
+                <Link href="/requests/new" className="btn btn--primary">
                   Post a Request
                 </Link>
-                <Link href="/profile/edit" className="btn-secondary">
+                <Link href="/profile/edit" className="btn btn--secondary">
                   Create a specialist profile
                 </Link>
-              </div>
+              </>
             }
           >
             Post what AI built for you and specialists will find it — or, if you finish AI-built work yourself, create your
@@ -67,36 +63,30 @@ export default async function SpecialistsPage({ searchParams }: PageProps<"/spec
           </EmptyState>
         )
       ) : (
-        <ul className="divide-y divide-line-soft border-t border-line-soft">
+        <ul className="rows">
           {result.rows.map((p) => (
             <li key={p.id}>
-              <Link href={`/specialists/${p.slug}`} className="group grid gap-3 py-6 sm:grid-cols-[1fr_auto] sm:gap-8">
-                <div>
-                  <p className="text-base font-semibold group-hover:text-brand">
-                    {p.name} <span className="font-normal text-muted">· {p.title}</span>
-                  </p>
-                  <p className="mt-1 max-w-2xl text-[15px] leading-6 text-ink-soft">{p.positioning}</p>
-                  <div className="mt-3">
-                    <SkillTags skills={p.skills} limit={5} />
+              <Link href={`/specialists/${p.slug}`} className="row-link">
+                <div className="person-row person-row--flush">
+                  <Avatar name={p.name} />
+                  <div className="min-w-0">
+                    <p className="row-link__title">
+                      {p.name} <span className="muted">· {p.title}</span>
+                    </p>
+                    <p className="row-link__body">{p.positioning}</p>
+                    <div className="mt-3">
+                      <SkillTags skills={p.skills} limit={5} />
+                    </div>
                   </div>
                 </div>
-                <p className="text-sm text-muted sm:text-right">
-                  {WORK_MODE_LABEL[p.workMode]}
-                  {p.location && <span className="block">{p.location}</span>}
-                </p>
+                {p.location && <p className="row-link__meta">{p.location}</p>}
               </Link>
             </li>
           ))}
         </ul>
       )}
 
-      <Pagination
-        page={result.page}
-        total={result.total}
-        pageSize={PAGE_SIZE}
-        basePath="/specialists"
-        params={{ q: filters.q, skill: filters.skill, work: filters.workMode }}
-      />
+      <Pagination page={result.page} total={result.total} pageSize={PAGE_SIZE} basePath="/specialists" params={filters} />
     </div>
   );
 }

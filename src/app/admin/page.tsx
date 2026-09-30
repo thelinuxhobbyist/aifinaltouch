@@ -29,11 +29,11 @@ const EVENT_LABELS: Record<string, string> = {
 function Stat({ label, value, href }: { label: string; value: number | string; href?: string }) {
   const inner = (
     <>
-      <dt className="text-sm text-muted">{label}</dt>
-      <dd className="mt-1 text-2xl font-semibold tabular-nums">{value}</dd>
+      <dt>{label}</dt>
+      <dd>{value}</dd>
     </>
   );
-  return <div className="border-t border-line pt-3">{href ? <Link href={href} className="block hover:text-brand">{inner}</Link> : inner}</div>;
+  return <div className="stat">{href ? <Link href={href} className="block">{inner}</Link> : inner}</div>;
 }
 
 export default async function AdminOverview() {
@@ -84,10 +84,10 @@ export default async function AdminOverview() {
   const published = byStatus(requestStatus, "published") + byStatus(requestStatus, "closed");
 
   return (
-    <div className="space-y-14">
+    <div className="stack stack--xl">
       <section>
-        <h1 className="text-2xl font-semibold tracking-tight">Overview</h1>
-        <dl className="mt-6 grid grid-cols-2 gap-x-8 gap-y-6 sm:grid-cols-4">
+        <h1 className="h2">Overview</h1>
+        <dl className="stats mt-6">
           <Stat label="Users" value={userCount} href="/admin/users" />
           <Stat label="Public profiles" value={byStatus(profileStatus, "published")} href="/admin/profiles" />
           <Stat label="Open Requests" value={byStatus(requestStatus, "published")} href="/admin/requests" />
@@ -100,9 +100,9 @@ export default async function AdminOverview() {
       </section>
 
       <section>
-        <h2 className="text-lg font-semibold">Is the core loop working?</h2>
-        <p className="mt-1 text-sm text-muted">All time. An introduction is a conversation where both people have written.</p>
-        <dl className="mt-6 grid grid-cols-2 gap-x-8 gap-y-6 sm:grid-cols-4">
+        <h2 className="h3">Is the core loop working?</h2>
+        <p className="small muted mt-1">All time. An introduction is a conversation where both people have written.</p>
+        <dl className="stats mt-6">
           <Stat label="Requests published" value={published} />
           <Stat
             label="…with at least one interest"
@@ -114,8 +114,8 @@ export default async function AdminOverview() {
       </section>
 
       <section>
-        <h2 className="text-lg font-semibold">Activity — last 30 days</h2>
-        <dl className="mt-6 grid grid-cols-2 gap-x-8 gap-y-6 sm:grid-cols-3">
+        <h2 className="h3">Activity — last 30 days</h2>
+        <dl className="stats stats--3 mt-6">
           {Object.entries(EVENT_LABELS).map(([name, label]) => (
             <Stat key={name} label={label} value={eventCount(name)} />
           ))}
@@ -123,18 +123,18 @@ export default async function AdminOverview() {
       </section>
 
       <section>
-        <h2 className="text-lg font-semibold">Recent moderation</h2>
+        <h2 className="h3">Recent moderation</h2>
         {recentActions.length === 0 ? (
-          <p className="mt-3 text-sm text-muted">No moderation actions yet.</p>
+          <p className="small muted mt-3">No moderation actions yet.</p>
         ) : (
-          <ul className="mt-4 divide-y divide-line-soft text-sm">
+          <ul className="rows mt-4">
             {recentActions.map(({ action, adminName }) => (
-              <li key={action.id} className="flex justify-between gap-4 py-2.5">
-                <span>
-                  <span className="font-medium">{adminName}</span> · {action.action.replace(/_/g, " ")}{" "}
-                  <span className="font-mono text-xs text-muted">{action.targetId.slice(0, 8)}</span>
+              <li key={action.id} className="row small">
+                <span className="row__main">
+                  <span className="strong">{adminName}</span> · {action.action.replace(/_/g, " ")}{" "}
+                  <span className="mono xsmall muted">{action.targetId.slice(0, 8)}</span>
                 </span>
-                <span className="shrink-0 text-muted">{formatDateTime(action.createdAt)}</span>
+                <span className="muted shrink-0">{formatDateTime(action.createdAt)}</span>
               </li>
             ))}
           </ul>
