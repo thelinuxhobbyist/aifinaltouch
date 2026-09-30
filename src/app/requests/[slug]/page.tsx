@@ -8,7 +8,7 @@ import { Avatar, SkillTags, StatusBadge } from "@/components/ui";
 import type { User } from "@/db/schema";
 import { track } from "@/lib/analytics";
 import { getCurrentUser } from "@/lib/auth";
-import { excerpt, formatDate, timeAgo } from "@/lib/format";
+import { detectAiTool, excerpt, firstName, formatDate, timeAgo } from "@/lib/format";
 import {
   canViewRequest,
   getInterest,
@@ -54,6 +54,7 @@ export default async function RequestPage({ params, searchParams }: PageProps<"/
 
   const canSeePrivateFiles = isOwner || !!user?.isAdmin || (user ? !!(await getInterest(request.id, user.id)) : false);
   const attachments = request.attachments.filter((a) => a.visibility === "public" || canSeePrivateFiles);
+  const tool = detectAiTool(`${request.aiCreated} ${request.title}`);
 
   return (
     <article className="container page">
@@ -66,40 +67,54 @@ export default async function RequestPage({ params, searchParams }: PageProps<"/
       <div className="with-sidebar">
         <div className="min-w-0">
           <div className="breadcrumb">
-            <Link href="/requests">← Requests</Link>
-            <span aria-hidden>·</span>
-            <span>Posted {timeAgo(request.publishedAt ?? request.createdAt)}</span>
+            <Link href="/requests">← All Requests</Link>
             {request.status !== "published" && <StatusBadge status={request.status} />}
           </div>
           <h1 className="h1 mt-4">{request.title}</h1>
-          <div className="mt-5">
-            <SkillTags skills={request.skills} />
+          <div className="byline mt-5">
+            <Avatar name={request.requesterName} size="sm" />
+            <span className="byline__text">
+              <span className="strong">{firstName(request.requesterName)}</span>{" "}
+              <span className="muted">{tool ? `built this with ${tool}` : "built this with AI"}</span>
+            </span>
+            <span className="byline__time">Posted {timeAgo(request.publishedAt ?? request.createdAt)}</span>
           </div>
 
-          <div className="stack stack--lg mt-10">
-            <Section title="What AI created">
-              <p className="prose">{request.aiCreated}</p>
-            </Section>
-            {request.likes && (
-              <Section title="What they like">
-                <p className="prose">{request.likes}</p>
-              </Section>
-            )}
-            <Section title="What isn't right">
+          <div className="compare mt-10">
+            <section className="compare__card">
+              <p className="label-caps">What AI made</p>
+              <p className="prose mt-3">{request.aiCreated}</p>
+              {request.likes && (
+                <>
+                  <p className="label-caps mt-6">What they like about it</p>
+                  <p className="prose mt-3">{request.likes}</p>
+                </>
+              )}
+            </section>
+            <section className="compare__card compare__card--human">
+              <p className="label-caps">The last 10% — what isn&apos;t right</p>
+              <p className="prose mt-3">{request.notRight}</p>
               {request.problemTags.length > 0 && (
-                <ul className="tags mb-6">
+                <ul className="tags mt-4">
                   {request.problemTags.map((t) => (
-                    <li key={t} className="tag tag--outline">
+                    <li key={t} className="tag">
                       {t}
                     </li>
                   ))}
                 </ul>
               )}
-              <p className="prose">{request.notRight}</p>
+            </section>
+          </div>
+
+          <div className="stack stack--lg mt-10">
+            <Section title="What they're looking for">
+              <p className="lead">{request.needs}</p>
             </Section>
-            <Section title="What they need">
-              <p className="prose">{request.needs}</p>
-            </Section>
+            {request.skills.length > 0 && (
+              <Section title="Skills that might help">
+                <SkillTags skills={request.skills} />
+              </Section>
+            )}
             {attachments.length > 0 && (
               <Section title="Attachments">
                 <ul className="grid grid--2" role="list">
@@ -147,18 +162,13 @@ export default async function RequestPage({ params, searchParams }: PageProps<"/
                   </dd>
                 </div>
               )}
-              {request.budget && (
-                <div>
-                  <dt>Budget</dt>
-                  <dd>{request.budget}</dd>
-                </div>
-              )}
               <div>
-                <dt>Posted by</dt>
-                <dd>{request.requesterName.split(" ")[0]}</dd>
+                <dt>Budget</dt>
+                <dd>{request.budget ?? "To discuss directly"}</dd>
               </div>
             </dl>
             <div className="divider-top">
+              {!isOwner && <h2 className="h4 mb-4">Can you help {firstName(request.requesterName)}?</h2>}
               {isOwner ? <OwnerPanel request={request} /> : <InterestPanel request={request} user={user} />}
             </div>
           </div>
@@ -207,7 +217,10 @@ async function InterestPanel({ request, user }: { request: RequestWithDetails; u
   if (!user) {
     return (
       <div className="stack stack--sm">
-        <p className="small soft">Can you help finish this? Sign in with a specialist profile to express interest.</p>
+        <p className="small soft">
+          Sign in with a specialist profile to say you&apos;d like to help. You&apos;ll chat here first, then arrange the work
+          directly.
+        </p>
         <Link
           href={`/sign-in?redirect_url=${encodeURIComponent(`/requests/${request.slug}`)}`}
           className="btn btn--primary btn--block"

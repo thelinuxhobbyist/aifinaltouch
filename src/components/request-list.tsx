@@ -1,31 +1,52 @@
 import Link from "next/link";
-import { SkillTags } from "@/components/ui";
-import type { Request, Skill } from "@/db/schema";
-import { excerpt, timeAgo } from "@/lib/format";
+import { Avatar } from "@/components/ui";
+import { detectAiTool, excerpt, firstName, timeAgo } from "@/lib/format";
+import type { RequestListItem } from "@/lib/queries";
 
-export function RequestList({ requests }: { requests: (Request & { skills: Skill[] })[] }) {
+function RequestCard({ request: r }: { request: RequestListItem }) {
+  const tool = detectAiTool(`${r.aiCreated} ${r.title}`);
   return (
-    <ul className="rows">
+    <Link href={`/requests/${r.slug}`} className="request-card">
+      <div className="byline">
+        <Avatar name={r.requesterName} size="sm" />
+        <span className="byline__text">
+          <span className="strong">{firstName(r.requesterName)}</span>{" "}
+          <span className="muted">{tool ? `built this with ${tool}` : "built this with AI"}</span>
+        </span>
+        <span className="byline__time">{timeAgo(r.publishedAt ?? r.createdAt)}</span>
+      </div>
+
+      <h2 className="request-card__title">{r.title}</h2>
+
+      <div>
+        <p className="label-caps">What&apos;s not right</p>
+        <p className="request-card__quote">{excerpt(r.notRight, 170)}</p>
+      </div>
+
+      {r.problemTags.length > 0 && (
+        <ul className="tags">
+          {r.problemTags.slice(0, 2).map((t) => (
+            <li key={t} className="tag tag--outline">
+              {t}
+            </li>
+          ))}
+        </ul>
+      )}
+
+      <div className="request-card__foot">
+        <span className="small muted">{r.budget ?? "Budget to discuss"}</span>
+        <span className="request-card__cta">Can you help? →</span>
+      </div>
+    </Link>
+  );
+}
+
+export function RequestList({ requests }: { requests: RequestListItem[] }) {
+  return (
+    <ul className="request-grid" role="list">
       {requests.map((r) => (
         <li key={r.id}>
-          <Link href={`/requests/${r.slug}`} className="row-link">
-            <div className="min-w-0">
-              <p className="row-link__title">{r.title}</p>
-              <p className="row-link__body">{excerpt(r.notRight, 200)}</p>
-              <div className="mt-3">
-                <SkillTags skills={r.skills} limit={4} />
-              </div>
-            </div>
-            <p className="row-link__meta">
-              {timeAgo(r.publishedAt ?? r.createdAt)}
-              {r.budget && (
-                <>
-                  <br />
-                  <span className="soft">{r.budget}</span>
-                </>
-              )}
-            </p>
-          </Link>
+          <RequestCard request={r} />
         </li>
       ))}
     </ul>

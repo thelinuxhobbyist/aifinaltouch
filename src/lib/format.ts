@@ -26,6 +26,20 @@ export function daysAgo(days: number): Date {
   return new Date(Date.now() - days * 24 * 60 * 60 * 1000);
 }
 
+const AI_TOOLS = ["Claude", "ChatGPT", "Lovable", "v0", "Bolt", "Cursor", "Replit", "Gemini", "Copilot", "Windsurf"];
+
+/** The first AI tool named in free text, used to label Requests ("Built with Claude"). */
+export function detectAiTool(text: string): string | null {
+  for (const tool of AI_TOOLS) {
+    if (new RegExp(`\\b${tool}\\b`, "i").test(text)) return tool;
+  }
+  return null;
+}
+
+export function firstName(name: string): string {
+  return name.trim().split(/\s+/)[0] ?? name;
+}
+
 export function excerpt(text: string, max = 180): string {
   const clean = text.replace(/\s+/g, " ").trim();
   return clean.length > max ? `${clean.slice(0, max - 1).trimEnd()}…` : clean;

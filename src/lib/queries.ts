@@ -92,17 +92,24 @@ export async function listPublishedRequests(filters: RequestFilters) {
   const page = Math.max(1, filters.page ?? 1);
   const [rows, [{ total }]] = await Promise.all([
     db
-      .select()
+      .select({ request: requests, requesterName: users.displayName })
       .from(requests)
+      .innerJoin(users, eq(users.id, requests.userId))
       .where(and(...where))
       .orderBy(desc(requests.publishedAt))
       .limit(PAGE_SIZE)
       .offset((page - 1) * PAGE_SIZE),
     db.select({ total: count() }).from(requests).where(and(...where)),
   ]);
-  const skillMap = await skillsFor("request", rows.map((r) => r.id));
-  return { rows: rows.map((r) => ({ ...r, skills: skillMap.get(r.id) ?? [] })), total, page };
+  const skillMap = await skillsFor("request", rows.map((r) => r.request.id));
+  return {
+    rows: rows.map((r) => ({ ...r.request, requesterName: r.requesterName, skills: skillMap.get(r.request.id) ?? [] })),
+    total,
+    page,
+  };
 }
+
+export type RequestListItem = Awaited<ReturnType<typeof listPublishedRequests>>["rows"][number];
 
 export async function getRequestBySlug(slug: string) {
   const db = getDb();

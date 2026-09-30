@@ -8,7 +8,7 @@ import { pageParam, param } from "@/lib/search-params";
 
 export const metadata: Metadata = {
   title: "Browse Requests",
-  description: "AI-built websites and apps that need a professional to improve, review or finish them.",
+  description: "AI-built websites and apps that need a human to help finish them.",
 };
 
 export default async function RequestsPage({ searchParams }: PageProps<"/requests">) {
@@ -23,18 +23,24 @@ export default async function RequestsPage({ searchParams }: PageProps<"/request
         eyebrow="Requests"
         title={
           <>
-            AI-built work that needs a <em>human</em>
+            Built with AI. <em>Almost</em> there.
           </>
         }
-        description="Websites and apps people have built with AI and want a professional to improve, review or finish. Open one and click “I’m interested” if you can help."
+        description="People who have made something with AI and need a human for the last part. If you can help, open one and say hello."
         actions={
           <Link href="/requests/new" className="btn btn--primary">
-            Post a Request
+            Tell us what you built
           </Link>
         }
       />
 
       <FilterBar action="/requests" q={filters.q} skill={filters.skill} skills={skills} placeholder="Search Requests" />
+
+      {result.total > 0 && (
+        <p className="small muted mb-6">
+          {result.total} {filtered ? "matching" : "open"} Request{result.total === 1 ? "" : "s"}
+        </p>
+      )}
 
       {result.rows.length === 0 ? (
         filtered ? (
@@ -44,11 +50,11 @@ export default async function RequestsPage({ searchParams }: PageProps<"/request
             title="No open Requests right now"
             action={
               <Link href="/requests/new" className="btn btn--primary">
-                Post the first Request
+                Tell us what you built
               </Link>
             }
           >
-            Built something with AI that isn&apos;t quite right? Describe it and specialists who can finish it will get in touch.
+            Built something with AI that isn&apos;t quite right? Describe it and someone who can finish it will get in touch.
           </EmptyState>
         )
       ) : (
