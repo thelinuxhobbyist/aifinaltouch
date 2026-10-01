@@ -1045,7 +1045,12 @@ main {
 }
 .auth-page {
   display: flex;
-  justify-content: center;
+  flex-direction: column;
+  align-items: center;
+  gap: var(--space-8);
+}
+.auth-intro {
+  max-width: 28rem;
 }
 .breadcrumb {
   display: flex;

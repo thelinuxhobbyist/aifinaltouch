@@ -12,9 +12,19 @@ const isProtected = createRouteMatcher([
   "/admin(.*)",
 ]);
 
-const clerk = clerkMiddleware(async (auth, req) => {
-  if (isProtected(req)) await auth.protect();
-});
+const clerk = clerkMiddleware(
+  async (auth, req) => {
+    if (!isProtected(req)) return;
+    // Clerk's protect()/redirectToSignIn() answer client-side navigations with a 404 instead of a redirect.
+    const { userId } = await auth();
+    if (!userId) {
+      const signIn = new URL("/sign-in", req.url);
+      signIn.searchParams.set("redirect_url", req.nextUrl.pathname + req.nextUrl.search);
+      return NextResponse.redirect(signIn);
+    }
+  },
+  { signInUrl: "/sign-in", signUpUrl: "/sign-up" },
+);
 
 export default function proxy(req: NextRequest, event: NextFetchEvent) {
   return clerkEnabled ? clerk(req, event) : NextResponse.next();
