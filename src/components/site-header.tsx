@@ -10,9 +10,9 @@ export async function SiteHeader() {
   const unread = user ? await unreadMessageCount(user.id) : 0;
 
   const nav: NavItem[] = [
-    { href: "/", label: "Home" },
-    { href: "/requests", label: "Browse Requests" },
-    { href: "/specialists", label: "Find a Specialist" },
+    { href: "/#how", label: "How it works" },
+    { href: "/requests", label: "Browse requests" },
+    { href: "/specialists", label: "Find a specialist" },
     ...(user ? [{ href: "/dashboard", label: "Dashboard" }] : []),
     ...(user?.isAdmin ? [{ href: "/admin", label: "Admin" }] : []),
   ];
@@ -41,17 +41,17 @@ export async function SiteHeader() {
                 )}
               </Link>
               <Link href="/requests/new" className="btn btn--primary only-wide">
-                Post a Request
+                Post a request
               </Link>
               <UserButton />
             </>
           ) : (
             <>
-              <Link href="/sign-in" className="btn btn--ghost only-wide">
+              <Link href="/sign-in" className="header-link only-wide">
                 Sign in
               </Link>
               <Link href="/requests/new" className="btn btn--primary">
-                Post a Request
+                Post a request
               </Link>
             </>
           )}
@@ -67,7 +67,7 @@ export async function SiteHeader() {
               <NavLinks items={nav} className="menu__link" />
               {user ? (
                 <Link href="/requests/new" className="menu__link menu__link--brand">
-                  Post a Request
+                  Post a request
                 </Link>
               ) : (
                 <Link href="/sign-in" className="menu__link">

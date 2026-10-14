@@ -1,34 +1,31 @@
 import type { Metadata } from "next";
-import { Geist, Geist_Mono, Instrument_Serif } from "next/font/google";
+import { Plus_Jakarta_Sans } from "next/font/google";
 import { ClerkProvider } from "@clerk/nextjs";
 import { SiteHeader } from "@/components/site-header";
 import { SiteFooter } from "@/components/site-footer";
 import { clerkEnabled } from "@/lib/clerk-config";
 import "./globals.css";
 
-const geist = Geist({ variable: "--font-geist", subsets: ["latin"] });
-const geistMono = Geist_Mono({ variable: "--font-geist-mono", subsets: ["latin"] });
-const instrument = Instrument_Serif({
-  variable: "--font-instrument",
+const jakarta = Plus_Jakarta_Sans({
+  variable: "--font-jakarta",
   subsets: ["latin"],
-  weight: "400",
-  style: ["normal", "italic"],
+  display: "swap",
 });
 
 export const metadata: Metadata = {
   metadataBase: new URL(process.env.NEXT_PUBLIC_APP_URL ?? "https://aifinaltouch.com"),
   title: {
-    default: "AI Final Touch — Made with AI. Finished by humans.",
+    default: "AI Final Touch — AI built most of it. A person can finish it.",
     template: "%s · AI Final Touch",
   },
   description:
-    "AI got you 90% there. Find the human for the other 10%. Connect with designers and developers who finish AI-built websites and apps.",
+    "Made a website or app with AI and stuck on the last part? Tell us what's not quite right and we'll introduce you to someone who can fix it.",
   openGraph: { siteName: "AI Final Touch", type: "website" },
 };
 
 export default function RootLayout({ children }: LayoutProps<"/">) {
   const page = (
-    <html lang="en" className={`${geist.variable} ${geistMono.variable} ${instrument.variable}`}>
+    <html lang="en" className={jakarta.variable}>
       <body>
         <SiteHeader />
         <main>{children}</main>
@@ -41,7 +38,7 @@ export default function RootLayout({ children }: LayoutProps<"/">) {
     <ClerkProvider
       signInUrl="/sign-in"
       signUpUrl="/sign-up"
-      appearance={{ variables: { colorPrimary: "#2152e8", borderRadius: "10px" } }}
+      appearance={{ variables: { colorPrimary: "#0a7d62", borderRadius: "12px" } }}
     >
       {page}
     </ClerkProvider>
