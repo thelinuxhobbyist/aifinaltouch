@@ -98,7 +98,7 @@
   --container-profile: 64rem;
   --profile-rail: 16rem;
   --gutter: 1.5rem;
-  --header-h: 4.25rem;
+  --header-h: 4.5rem;
   --sidebar: 20rem;
 
   /* Motion */
@@ -857,15 +857,19 @@ main {
 .site-header__inner {
   display: flex;
   align-items: center;
-  gap: 16px;
+  gap: var(--space-4);
   height: var(--header-h);
   min-width: 0;
+}
+.site-header__logo {
+  display: inline-flex;
+  flex-shrink: 0;
 }
 .site-header__actions {
   display: flex;
   align-items: center;
   flex-shrink: 0;
-  gap: 8px;
+  gap: var(--space-3);
   margin-left: auto;
 }
 .logo {
@@ -886,41 +890,22 @@ main {
 .nav {
   display: none;
   align-items: center;
+  flex-shrink: 0;
   flex-wrap: nowrap;
   gap: 28px;
 }
-@media (min-width: 900px) {
+@media (min-width: 960px) {
   .nav {
     display: flex;
   }
 }
-/* Signed-in adds Dashboard, Messages and the account button. Keep every label
-   on one line inside the same column as the page, and keep the menu until the
-   row is wide enough to hold them. */
-.site-header--auth .nav {
-  gap: var(--space-4);
-}
-.site-header--auth .nav__link,
-.site-header--auth .header-link {
-  font-size: var(--fs-sm);
-}
-.site-header--auth .btn {
-  padding: 10px 16px;
-}
-.site-header--auth .header-link {
-  padding-inline: var(--space-2);
-}
-@media (min-width: 900px) and (max-width: 1039px) {
-  .site-header--auth .nav {
-    display: none;
-  }
-  .site-header--auth .menu {
-    display: block;
-  }
-}
 .nav__link {
+  display: inline-flex;
+  align-items: center;
+  padding-block: var(--space-2);
   font-size: 15px;
   font-weight: var(--fw-medium);
+  line-height: 1.2;
   color: var(--c-muted);
   white-space: nowrap;
   transition: color var(--dur) var(--ease);
@@ -936,20 +921,49 @@ main {
   padding: var(--space-2) var(--space-3);
   font-size: 15px;
   font-weight: var(--fw-medium);
+  line-height: 1.2;
   color: var(--c-muted);
+  white-space: nowrap;
 }
 .header-link:hover {
   color: var(--c-ink);
 }
+.header-messages {
+  display: none;
+}
+@media (min-width: 960px) {
+  .header-messages {
+    display: inline-flex;
+  }
+}
+.account {
+  position: relative;
+  display: inline-flex;
+  flex-shrink: 0;
+}
+.account__count {
+  position: absolute;
+  top: -0.3rem;
+  right: -0.35rem;
+  z-index: 1;
+  pointer-events: none;
+}
+@media (min-width: 960px) {
+  .account__count {
+    display: none;
+  }
+}
 .menu {
   position: relative;
+  flex-shrink: 0;
 }
-@media (min-width: 900px) {
+@media (min-width: 960px) {
   .menu {
     display: none;
   }
 }
 .menu__button {
+  position: relative;
   display: grid;
   place-items: center;
   width: 2.5rem;
@@ -958,6 +972,12 @@ main {
   border-radius: var(--radius-md);
   list-style: none;
   cursor: pointer;
+}
+.menu__count {
+  position: absolute;
+  top: -0.35rem;
+  right: -0.35rem;
+  display: none;
 }
 .menu__button::-webkit-details-marker {
   display: none;
@@ -975,32 +995,69 @@ main {
     height: 28px;
   }
   .site-header .btn {
-    padding: 9px 12px;
-    font-size: 13px;
+    padding: 10px 14px;
+    font-size: 14px;
   }
   .menu__button {
     width: 2.25rem;
     height: 2.25rem;
   }
 }
+@media (max-width: 419px) {
+  .account {
+    display: none;
+  }
+  .menu__count {
+    display: inline-flex;
+  }
+  .site-header__inner,
+  .site-header__actions {
+    gap: var(--space-2);
+  }
+  .site-header .container {
+    padding-inline: 12px;
+  }
+  .site-header .btn {
+    padding: 8px 10px;
+  }
+}
 .menu__panel {
   position: absolute;
   top: calc(100% + var(--space-2));
   right: 0;
+  z-index: 2;
   display: flex;
   flex-direction: column;
   width: 16rem;
+  max-height: min(70vh, 28rem);
+  overflow: auto;
   padding: var(--space-2);
   background: var(--c-bg);
   border: 1px solid var(--c-line);
   border-radius: var(--radius-lg);
   box-shadow: var(--shadow-md);
 }
+.menu__group + .menu__group {
+  margin-top: var(--space-2);
+  padding-top: var(--space-2);
+  border-top: 1px solid var(--c-line);
+}
 .menu__link {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-2);
+  width: 100%;
   padding: 0.625rem var(--space-3);
+  border: 0;
   border-radius: var(--radius-sm);
-  font-size: var(--fs-sm);
+  background: none;
+  font-size: 15px;
   font-weight: var(--fw-medium);
+  line-height: 1.3;
+  text-align: left;
+  white-space: nowrap;
+  color: inherit;
 }
 .menu__link:hover,
 .menu__link[aria-current="page"] {
