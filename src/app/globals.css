@@ -886,6 +886,7 @@ main {
 .nav {
   display: none;
   align-items: center;
+  flex-wrap: nowrap;
   gap: 28px;
 }
 @media (min-width: 900px) {
@@ -893,10 +894,35 @@ main {
     display: flex;
   }
 }
+/* Signed-in adds Dashboard, Messages and the account button. Keep every label
+   on one line inside the same column as the page, and keep the menu until the
+   row is wide enough to hold them. */
+.site-header--auth .nav {
+  gap: var(--space-4);
+}
+.site-header--auth .nav__link,
+.site-header--auth .header-link {
+  font-size: var(--fs-sm);
+}
+.site-header--auth .btn {
+  padding: 10px 16px;
+}
+.site-header--auth .header-link {
+  padding-inline: var(--space-2);
+}
+@media (min-width: 900px) and (max-width: 1039px) {
+  .site-header--auth .nav {
+    display: none;
+  }
+  .site-header--auth .menu {
+    display: block;
+  }
+}
 .nav__link {
   font-size: 15px;
   font-weight: var(--fw-medium);
   color: var(--c-muted);
+  white-space: nowrap;
   transition: color var(--dur) var(--ease);
 }
 .nav__link:hover,

@@ -18,7 +18,7 @@ export async function SiteHeader() {
   ];
 
   return (
-    <header className="site-header">
+    <header className={user ? "site-header site-header--auth" : "site-header"}>
       <div className="container site-header__inner">
         <Link href="/" aria-label="AI Final Touch home">
           <Logo />
